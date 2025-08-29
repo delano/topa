@@ -13,6 +13,7 @@
 .*.json
 *.env
 *.log
+*.pyc
 .mcp.json
 .ruby-version
 .venv
@@ -21,4 +22,4 @@ log
 tmp
 vendor
 doc/
-
+__pycache__

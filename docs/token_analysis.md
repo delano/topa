@@ -25,7 +25,7 @@ failures:
 - file: "agent_formatter_try.rb"
   tests:
   - line: 46
-    name: "formats failed test with multiple issues"  
+    name: "formats failed test with multiple issues"
     type: failure
     expected: "FAIL: 1/3 tests (1 files, 125ms)"
     actual: "FAIL: 1/3 tests (1 files, 125ms)\\n\\ntry/formatters..."
@@ -41,16 +41,16 @@ Token count: ~75-85 tokens (60-65% reduction)
 - **Reduction**: 70-80% vs raw output
 - **Use case**: CI/CD status checks, dashboard displays
 
-### Critical Mode (Error-Focused) 
+### Critical Mode (Error-Focused)
 - **Target**: Errors/exceptions only, skip assertion failures
-- **Token count**: ~100-300 tokens  
+- **Token count**: ~100-300 tokens
 - **Reduction**: 60-70% vs raw output
 - **Use case**: Production monitoring, critical issue triage
 
 ### First-Failure Mode (Sampling)
 - **Target**: One failure per file to understand scope
 - **Token count**: ~200-500 tokens
-- **Reduction**: 50-60% vs raw output 
+- **Reduction**: 50-60% vs raw output
 - **Use case**: Initial investigation, quick assessment
 
 ### Failures Mode (Comprehensive)
@@ -67,7 +67,7 @@ Token count: ~75-85 tokens (60-65% reduction)
 Before (repetitive):
 ```
 FAILED /project/tests/user_test.py::test_email - assertion failed
-FAILED /project/tests/user_test.py::test_password - assertion failed  
+FAILED /project/tests/user_test.py::test_password - assertion failed
 FAILED /project/tests/auth_test.py::test_login - error occurred
 ```
 
@@ -78,7 +78,7 @@ failures:
   tests:
   - name: "test email"
     type: failure
-  - name: "test password" 
+  - name: "test password"
     type: failure
 - file: "tests/auth_test.py"
   tests:
@@ -100,7 +100,7 @@ failures:
 - Large diffs: Show only first few lines with `"... (truncated)"`
 - Preserve meaningful content over filler words
 
-### 4. Semantic Compression  
+### 4. Semantic Compression
 **Savings**: 20-30% token reduction
 
 - `"Expected true but was false"` → `expected: "true", actual: "false"`
@@ -112,7 +112,7 @@ failures:
 ### Typical CI/CD Pipeline
 - **Test runs per day**: 100
 - **Average raw output**: 2,000 tokens per run
-- **TOPA output**: 800 tokens per run (60% reduction)  
+- **TOPA output**: 800 tokens per run (60% reduction)
 - **Daily savings**: 120,000 tokens
 - **Monthly savings**: 3.6M tokens
 
@@ -149,7 +149,7 @@ failures:
 3. **Better Context**: Semantic structure improves AI understanding
 4. **Cross-Tool Support**: One format works with multiple AI services
 
-### Tool Development  
+### Tool Development
 1. **Single Parser**: Build once, support all test frameworks
 2. **Reliable Structure**: No need for format-specific heuristics
 3. **Progressive Enhancement**: Choose detail level based on needs
@@ -179,7 +179,7 @@ TOPA demonstrates significant value in reducing token consumption while improvin
 
 **Key Success Factors**:
 - Evidence-based design (Tryouts validation)
-- Language-agnostic approach  
+- Language-agnostic approach
 - Progressive disclosure capabilities
 - Strong token optimization strategies
 - Clear integration path for existing tools

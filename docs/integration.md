@@ -15,16 +15,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Run tests
         run: |
           pytest --junit-xml=test-results.xml
         continue-on-error: true
-        
+
       - name: Convert to TOPA format
         run: |
           python topa/src/topa.py --format junit --mode summary test-results.xml > test-summary.yaml
-          
+
       - name: Upload TOPA output
         uses: actions/upload-artifact@v3
         with:
@@ -54,7 +54,7 @@ test:
 # Basic pytest integration
 pytest tests/ | python topa.py --format pytest --mode failures
 
-# With JSON output  
+# With JSON output
 pytest --json-report --json-report-file=results.json
 python topa.py --format pytest results.json
 
@@ -82,7 +82,7 @@ bundle exec rspec --format json | python topa.py --mode critical
 # Maven surefire reports
 python topa.py --format junit target/surefire-reports/TEST-*.xml
 
-# Gradle test reports  
+# Gradle test reports
 python topa.py --format junit build/test-results/test/TEST-*.xml
 
 # Single file
@@ -120,7 +120,7 @@ topa_output = result.stdout
 response = openai.ChatCompletion.create(
     model="gpt-4",
     messages=[{
-        "role": "user", 
+        "role": "user",
         "content": f"Analyze these test failures and suggest fixes:\n\n{topa_output}"
     }]
 )
@@ -179,7 +179,7 @@ print(response.content[0].text)
 function! TOPAAnalyze()
     let test_output = system('pytest --tb=short 2>&1')
     let topa_output = system('echo "' . escape(test_output, '"') . '" | python ~/topa/src/topa.py --mode critical')
-    
+
     " Display in new buffer
     new
     setlocal buftype=nofile
@@ -245,13 +245,13 @@ def detect_format(content: str) -> InputFormat:
 ```bash
 # For different model contexts
 python topa.py --limit 2000   # GPT-3.5 friendly
-python topa.py --limit 8000   # GPT-4 standard  
+python topa.py --limit 8000   # GPT-4 standard
 python topa.py --limit 32000  # GPT-4 Turbo
 python topa.py --limit 100000 # Claude-3 Opus
 
 # Focus modes for different needs
 python topa.py --mode summary      # Overview only (~200 tokens)
-python topa.py --mode critical     # Errors only (~500-1000 tokens)  
+python topa.py --mode critical     # Errors only (~500-1000 tokens)
 python topa.py --mode first-failure # One per file (~1000-2000 tokens)
 python topa.py --mode failures     # All failures (~2000-5000 tokens)
 ```
@@ -261,7 +261,7 @@ python topa.py --mode failures     # All failures (~2000-5000 tokens)
 ```bash
 # Process multiple test result files
 for file in test-results-*.xml; do
-    echo "=== $file ===" 
+    echo "=== $file ==="
     python topa.py --format junit --mode summary "$file"
 done > combined-analysis.yaml
 ```
@@ -271,7 +271,7 @@ done > combined-analysis.yaml
 ### Common Issues
 
 1. **Malformed Input**: TOPA includes fallback text parsing for most formats
-2. **Large Files**: Use `--limit` to cap token usage  
+2. **Large Files**: Use `--limit` to cap token usage
 3. **Unsupported Formats**: Contribute a new parser or use generic text parsing
 4. **Encoding Issues**: TOPA handles UTF-8 by default
 
@@ -312,14 +312,14 @@ def lambda_handler(event, context):
     # Parse test output from event
     test_output = event['test_output']
     format_type = event.get('format', 'pytest')
-    
+
     # Process with TOPA
     parser = PytestParser()  # or get_parser(format_type)
     parsed_data = parser.parse(test_output)
-    
+
     encoder = TOPAEncoder('summary')
     topa_output = encoder.encode(parsed_data)
-    
+
     return {
         'statusCode': 200,
         'body': json.dumps(topa_output)
@@ -338,7 +338,7 @@ def lambda_handler(event, context):
 ### Contribute Improvements
 
 - **New parsers** for additional test frameworks
-- **Enhanced format detection** algorithms  
+- **Enhanced format detection** algorithms
 - **Token optimization** improvements
 - **Integration examples** for popular tools
 

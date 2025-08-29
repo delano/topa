@@ -1,4 +1,4 @@
-version: '0.1'
+version: "0.1"
 summary:
   status: ERROR
   tests:
@@ -11,14 +11,14 @@ summary:
     with_failures: 1
   elapsed: 1.2s
 failures:
-- file: UserTest.java
-  tests:
-  - line: 1
-    name: requires password
-    type: failure
-    expected: 'true'
-    actual: 'false'
-  - line: 1
-    name: authentication
-    type: error
-    error: 'NoMethodError: undefined method `authenticate'' for nil:NilClass'
+  - file: UserTest.java
+    tests:
+      - line: 1
+        name: requires password
+        type: failure
+        expected: "true"
+        actual: "false"
+      - line: 1
+        name: authentication
+        type: error
+        error: "NoMethodError: undefined method `authenticate' for nil:NilClass"

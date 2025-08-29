@@ -10,7 +10,7 @@ echo "1. JUnit XML to TOPA (failures mode):"
 python src/topa.py --format junit examples/sample_junit.xml
 echo
 
-echo "2. pytest output to TOPA (summary mode):" 
+echo "2. pytest output to TOPA (summary mode):"
 python src/topa.py --format pytest --mode summary examples/sample_pytest.txt
 echo
 

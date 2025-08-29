@@ -26,9 +26,9 @@ TOPA (Test Output Protocol for AI) is a standardized test output format specific
 version: "0.1"
 summary:
   status: PASS|FAIL|ERROR
-  tests: 
+  tests:
     total: number
-    passed: number  
+    passed: number
     failed: number
     errors: number
   files:
@@ -41,10 +41,10 @@ failures:
   - file: "relative/path/to/test_file"
     tests:
       - line: line_number
-        name: "test description"  
+        name: "test description"
         type: "failure" | "error"
         expected: "expected_value"  # For assertion failures
-        actual: "actual_value"      # For assertion failures  
+        actual: "actual_value"      # For assertion failures
         error: "error_message"      # For exceptions/errors
         diff: "diff_content"        # Optional, budget-aware
 ```
@@ -64,8 +64,8 @@ failures:
 
 ### Time Format
 
-- Sub-millisecond: `"250¼s"`
-- Milliseconds: `"1.2s"`, `"350ms"` 
+- Sub-millisecond: `"250Â¼s"`
+- Milliseconds: `"1.2s"`, `"350ms"`
 - Seconds: `"1.2s"`, `"45.6s"`
 
 ## Focus Modes
@@ -80,13 +80,13 @@ version: "0.1"
 summary:
   status: FAIL
   tests: {total: 15, passed: 12, failed: 2, errors: 1}
-  files: {total: 3, with_failures: 2}  
+  files: {total: 3, with_failures: 2}
   elapsed: "1.2s"
-  
+
 files_with_issues:
   - file: "user_test.rb"
     issues: 2
-  - file: "auth_test.rb" 
+  - file: "auth_test.rb"
     issues: 1
 ```
 
@@ -110,7 +110,7 @@ failures:
         error: "NoMethodError: undefined method `authenticate' for nil"
 ```
 
-### 3. Failures Mode  
+### 3. Failures Mode
 Shows all failures and errors with full detail.
 
 ```yaml
@@ -122,7 +122,7 @@ summary:
   elapsed: "1.2s"
 
 failures:
-  - file: "user_test.rb"  
+  - file: "user_test.rb"
     tests:
       - line: 45
         name: "validates email format"
@@ -131,10 +131,10 @@ failures:
         actual: "false"
       - line: 52
         name: "requires strong password"
-        type: failure  
+        type: failure
         expected: "minimum 8 characters"
         actual: "got 6 characters"
-        
+
   - file: "auth_test.rb"
     tests:
       - line: 23
@@ -158,12 +158,12 @@ failures:
   - file: "user_test.rb"
     tests:
       - line: 45
-        name: "validates email format"  
+        name: "validates email format"
         type: failure
         expected: "true"
         actual: "false"
     truncated: 1  # Additional failures not shown
-    
+
   - file: "auth_test.rb"
     tests:
       - line: 23
@@ -179,15 +179,15 @@ failures:
 - Use consistent indentation and structure
 - Eliminate redundant information
 
-### 2. Smart Truncation  
+### 2. Smart Truncation
 - Truncate long values while preserving key information
 - Show meaningful prefixes/suffixes
-- Indicate truncation clearly: `"very long string..." ’ "very long st..."`
+- Indicate truncation clearly: `"very long string..." Â’ "very long st..."`
 
 ### 3. Relative Path Optimization
 ```ruby
 # Instead of: /Users/dev/project/spec/models/user_spec.rb
-# Use:        spec/models/user_spec.rb  
+# Use:        spec/models/user_spec.rb
 # Or:         user_spec.rb (if deeply nested)
 ```
 
@@ -198,7 +198,7 @@ Only include diffs when token budget allows:
 - line: 34
   name: "calculates total"
   type: failure
-  expected: "42"  
+  expected: "42"
   actual: "24"
   diff: |
     - 24
@@ -208,7 +208,7 @@ Only include diffs when token budget allows:
 ### 5. Progressive Disclosure Levels
 
 **Level 1 (Minimal)**: Status + counts only
-**Level 2 (Summary)**: + File-level issue counts  
+**Level 2 (Summary)**: + File-level issue counts
 **Level 3 (Critical)**: + Error details only
 **Level 4 (Standard)**: + All failure details
 **Level 5 (Verbose)**: + Diffs and extended context
@@ -227,12 +227,12 @@ TOPA parsers should support these common test output formats:
 </testsuite>
 ```
 
-### TAP (Test Anything Protocol)  
+### TAP (Test Anything Protocol)
 ```
 1..3
 ok 1 validates email
 not ok 2 requires password
-# Expected: true  
+# Expected: true
 # Actual: false
 ok 3 saves user
 ```
@@ -250,7 +250,7 @@ FAILED test_auth.py::test_login - AttributeError: 'NoneType'
   "examples": [
     {
       "description": "validates email",
-      "status": "passed"  
+      "status": "passed"
     },
     {
       "description": "requires password",
@@ -265,7 +265,7 @@ FAILED test_auth.py::test_login - AttributeError: 'NoneType'
 
 ### Token Budget Management
 - Implement configurable token limits (default: 2000 tokens)
-- Priority order: Summary ’ Errors ’ First failures ’ All failures ’ Diffs
+- Priority order: Summary Â’ Errors Â’ First failures Â’ All failures Â’ Diffs
 - Use exponential backoff for truncation decisions
 
 ### Error Handling

@@ -96,4 +96,3 @@ This is worth pursuing as a standalone project. The approach:
 3. Demonstrate value with 2-3 popular test frameworks
 4. Build community through early adopter feedback
 5. Propose to test framework maintainers once proven
-

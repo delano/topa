@@ -1,0 +1,31 @@
+================================= test session starts =================================
+platform darwin -- Python 3.9.7, pytest-6.2.4
+collected 4 items
+
+tests/test_user.py::test_validates_email PASSED                           [ 25%]
+tests/test_user.py::test_requires_password FAILED                         [ 50%]
+tests/test_user.py::test_saves_user PASSED                               [ 75%]
+tests/test_auth.py::test_authentication ERROR                            [100%]
+
+========================================= FAILURES =========================================
+________________________________ test_requires_password ________________________________
+
+    def test_requires_password():
+        user = User(email="test@example.com")
+>       assert user.validate() == True
+E       assert False == True
+E         Expected True but got False: Password is required
+
+tests/test_user.py:15: AssertionError
+======================================== ERRORS ========================================
+____________________________ ERROR at setup of test_authentication ____________________________
+
+    def test_authentication():
+>       auth_service = AuthService()
+E       NameError: name 'AuthService' is not defined
+
+tests/test_auth.py:8: NameError
+=========================== short test summary info ============================
+FAILED tests/test_user.py::test_requires_password - assert False == True
+ERROR tests/test_auth.py::test_authentication - NameError: name 'AuthService' is not defined
+========================== 2 failed, 2 passed, 0 skipped in 1.23s ==========================

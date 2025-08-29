@@ -1,0 +1,9 @@
+1..4
+ok 1 - validates email format
+not ok 2 - requires strong password
+# Expected: password validation to pass
+# Got: validation failed - password too short
+ok 3 - saves user successfully  
+not ok 4 - authenticates valid credentials
+# Error: undefined method `authenticate' for nil:NilClass
+# File: ./spec/auth_spec.rb:12

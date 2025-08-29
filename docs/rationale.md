@@ -43,7 +43,7 @@ Test Output Protocol for AI (TOPA):
   core_schema:
     - status: PASS/FAIL/ERROR
     - file_path: relative/normalized
-    - test_hierarchy: file → suite → test
+    - test_hierarchy: file -> suite -> test
     - failure_details: structured/progressive
 
   token_strategies:
@@ -57,7 +57,7 @@ Test Output Protocol for AI (TOPA):
     - deduplication: avoid redundancy
 
 ### Part 2: The Bridge Utility (Transitional Value)
-- STDIN → STDOUT translator
+- STDIN -> STDOUT translator
 - Ingests: JUnit XML, TAP, RSpec JSON, pytest, etc.
 - Outputs: Standardized TOPA format
 - Purpose: Immediate value while tools adopt native support

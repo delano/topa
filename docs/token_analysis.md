@@ -89,21 +89,21 @@ failures:
 ### 2. Path Normalization
 **Savings**: 15-25% token reduction
 
-- `/full/path/to/project/tests/user_spec.rb` → `tests/user_spec.rb`
-- `com.example.UserTest` → `UserTest.java`
+- `/full/path/to/project/tests/user_spec.rb` -> `tests/user_spec.rb`
+- `com.example.UserTest` -> `UserTest.java`
 - Remove common prefixes, use relative paths
 
 ### 3. Smart Truncation
 **Savings**: 10-20% token reduction
 
-- Long error messages: `"Very long error message that repeats information..."` → `"Very long error message..."`
+- Long error messages: `"Very long error message that repeats information..."` -> `"Very long error message..."`
 - Large diffs: Show only first few lines with `"... (truncated)"`
 - Preserve meaningful content over filler words
 
 ### 4. Semantic Compression
 **Savings**: 20-30% token reduction
 
-- `"Expected true but was false"` → `expected: "true", actual: "false"`
+- `"Expected true but was false"` -> `expected: "true", actual: "false"`
 - Remove redundant test framework boilerplate
 - Focus on actionable failure information
 
@@ -117,8 +117,8 @@ failures:
 - **Monthly savings**: 3.6M tokens
 
 ### Cost Estimates (GPT-4 pricing)
-- **Raw processing cost**: $21.60/month (3.6M × $0.006/1K)
-- **TOPA processing cost**: $8.64/month (1.44M × $0.006/1K)
+- **Raw processing cost**: $21.60/month (3.6M x $0.006/1K)
+- **TOPA processing cost**: $8.64/month (1.44M x $0.006/1K)
 - **Monthly savings**: $12.96/month per pipeline
 
 ### Large Organization (100 pipelines)
@@ -166,12 +166,12 @@ failures:
 ### Framework Coverage
 | Test Framework | Status | Token Reduction | Notes |
 |----------------|---------|-----------------|-------|
-| Tryouts (Ruby) | ✅ Implemented | 60-80% | Proof of concept |
-| JUnit (Java) | ✅ Planned | 60-70% | XML parsing |
-| pytest (Python) | ✅ Planned | 50-60% | Text parsing |
-| RSpec (Ruby) | ✅ Planned | 65-75% | JSON parsing |
-| Jest (JavaScript) | 🔄 Future | 55-65% | Needs adapter |
-| Go test | 🔄 Future | 50-60% | Text parsing |
+| Tryouts (Ruby) | Implemented | 60-80% | Proof of concept |
+| JUnit (Java) | Planned | 60-70% | XML parsing |
+| pytest (Python) | Planned | 50-60% | Text parsing |
+| RSpec (Ruby) | Planned | 65-75% | JSON parsing |
+| Jest (JavaScript) | Future | 55-65% | Needs adapter |
+| Go test | Future | 50-60% | Text parsing |
 
 ## Conclusion
 

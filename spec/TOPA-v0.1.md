@@ -64,7 +64,7 @@ failures:
 
 ### Time Format
 
-- Sub-millisecond: `"250¼s"`
+- Sub-millisecond: `"250us"`
 - Milliseconds: `"1.2s"`, `"350ms"`
 - Seconds: `"1.2s"`, `"45.6s"`
 
@@ -182,7 +182,7 @@ failures:
 ### 2. Smart Truncation
 - Truncate long values while preserving key information
 - Show meaningful prefixes/suffixes
-- Indicate truncation clearly: `"very long string..."  "very long st..."`
+- Indicate truncation clearly: `"very long string..."` or `"very long st..."`
 
 ### 3. Relative Path Optimization
 ```ruby
@@ -265,7 +265,7 @@ FAILED test_auth.py::test_login - AttributeError: 'NoneType'
 
 ### Token Budget Management
 - Implement configurable token limits (default: 2000 tokens)
-- Priority order: Summary  Errors  First failures  All failures  Diffs
+- Priority order: Summary -> Errors -> First failures -> All failures -> Diffs
 - Use exponential backoff for truncation decisions
 
 ### Error Handling

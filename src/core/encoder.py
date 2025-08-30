@@ -322,9 +322,15 @@ class TOPAEncoder:
             # Convert to Path object for easier manipulation
             path = Path(file_path)
 
+            # Check for potentially malicious path patterns
+            path_str = str(path)
+            if any(suspicious in path_str for suspicious in ['../', '..\\', '/etc/', '/proc/', '/sys/', 'C:\\Windows', 'C:\\System32']):
+                # For potentially suspicious paths, use only the filename
+                return path.name or "unknown"
+
             # If it's already relative and reasonable length, use as-is
-            if not path.is_absolute() and len(str(path)) < 50:
-                return str(path)
+            if not path.is_absolute() and len(path_str) < 50:
+                return path_str
 
             # Try to make relative to current directory
             try:

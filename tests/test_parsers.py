@@ -91,8 +91,8 @@ ERROR test_auth.py::test_login - NameError: name 'AuthService' is not defined
         expected, actual = self.parser._extract_assertion_values(
             "assert False == True"
         )
-        self.assertEqual(expected, "False")
-        self.assertEqual(actual, "True")
+        self.assertEqual(expected, "True")  # What we expected to be true
+        self.assertEqual(actual, "False")   # What we actually got
 
 
 class TestRSpecParser(unittest.TestCase):
@@ -412,10 +412,11 @@ class TestSecurityEdgeCases(unittest.TestCase):
         
         # Test various edge case paths (these are for display, not file access)
         test_paths = [
-            ("../../../etc/passwd", "etc/passwd"),  # Should use meaningful parts
-            ("..\\..\\..\\windows\\system32\\config\\sam", "sam"),  # May keep original or use basename
-            ("/etc/passwd", "passwd"),  # Should use basename for absolute paths
+            ("../../../etc/passwd", "passwd"),  # Malicious path should be sanitized to filename only
+            ("..\\..\\..\\windows\\system32\\config\\sam", "sam"),  # Malicious path should be sanitized to filename only
+            ("/etc/passwd", "passwd"),  # Absolute system path should be sanitized to filename only
             ("normal_file.rb", "normal_file.rb"),  # Normal files unchanged
+            ("spec/user_spec.rb", "spec/user_spec.rb"),  # Normal relative paths preserved
             ("", "unknown"),  # Empty path
         ]
         

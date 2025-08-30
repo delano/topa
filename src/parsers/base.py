@@ -142,12 +142,19 @@ class BaseParser(ABC):
             r"expected\s+([^,\n]+).*?(?:but\s+(?:was|got)|actual)\s+([^,\n]+)",
         ]
 
-        for pattern in patterns:
+        for i, pattern in enumerate(patterns):
             match = re.search(pattern, text, re.IGNORECASE | re.DOTALL)
             if match:
-                expected = match.group(1).strip()
-                actual = match.group(2).strip()
-                return expected, actual
+                if i == 1:  # pytest style: assert actual == expected
+                    # For pytest assertions, the first value is actual, second is expected
+                    actual = match.group(1).strip()
+                    expected = match.group(2).strip()
+                    return expected, actual
+                else:
+                    # For other patterns, group 1 is expected, group 2 is actual
+                    expected = match.group(1).strip()
+                    actual = match.group(2).strip()
+                    return expected, actual
 
         return None, None
 

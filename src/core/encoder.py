@@ -348,7 +348,13 @@ class TOPAEncoder:
                 meaningful_parts = parts[-2:]
                 try:
                     return '/'.join(meaningful_parts)  # Force forward slashes for consistency
-                except Exception:
+                except (TypeError, ValueError, AttributeError) as e:
+                    # Log the specific error for debugging
+                    # TypeError: if meaningful_parts contains non-string elements
+                    # ValueError: if join operation fails due to invalid characters
+                    # AttributeError: if meaningful_parts is not iterable
+                    import logging
+                    logging.debug(f"Path normalization failed for {meaningful_parts}: {e}")
                     return path.name
 
             # Fall back to basename if nothing else works
@@ -357,6 +363,15 @@ class TOPAEncoder:
 
             return str(path)
 
-        except Exception:
+        except (OSError, TypeError, ValueError, AttributeError) as e:
             # If any path processing fails, fall back to basename
-            return Path(file_path).name
+            # OSError: File system issues (permissions, invalid paths)
+            # TypeError: Invalid argument types
+            # ValueError: Invalid path values
+            # AttributeError: Missing attributes on path objects
+            import logging
+            logging.debug(f"Path normalization completely failed for '{file_path}': {e}")
+            try:
+                return Path(file_path).name
+            except (OSError, TypeError, ValueError):
+                return "unknown"

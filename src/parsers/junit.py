@@ -5,8 +5,21 @@ Parses JUnit XML test results into TOPA format.
 """
 
 import re
-import xml.etree.ElementTree as ET
-from typing import List
+import html
+from typing import List, TYPE_CHECKING
+try:
+    # Use defusedxml for security if available
+    import defusedxml.ElementTree as ET
+except ImportError:
+    # Fall back to standard library
+    import xml.etree.ElementTree as ET
+
+# For type hints, always use the standard library types
+if TYPE_CHECKING:
+    import xml.etree.ElementTree as ET_types
+    Element = ET_types.Element
+else:
+    Element = ET.Element
 
 try:
     from ..core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
@@ -53,15 +66,22 @@ class JUnitParser(BaseParser):
         if content.startswith("\ufeff"):
             content = content[1:]
 
-        # Fix common encoding issues
-        content = content.replace("&", "&amp;")
+        # Fix common encoding issues using html.escape for safety
+        # Only escape if not already escaped
+        if "&amp;" not in content and "&lt;" not in content:
+            # Escape special characters that aren't already escaped
+            content = content.replace("&", "&amp;")
+            content = content.replace("<", "&lt;")
+            content = content.replace(">", "&gt;")
+        
+        # Don't double-encode already escaped entities
         content = re.sub(
             r"&amp;(amp|lt|gt|quot|apos);", r"&\1;", content
-        )  # Don't double-encode
+        )
 
         return content.strip()
 
-    def _parse_testsuites(self, testsuites: List[ET.Element]) -> ParsedTestData:
+    def _parse_testsuites(self, testsuites: List[Element]) -> ParsedTestData:
         """Parse multiple test suites."""
         file_results = []
         total_tests = 0
@@ -119,7 +139,7 @@ class JUnitParser(BaseParser):
             file_results=file_results,
         )
 
-    def _parse_testcase(self, testcase: ET.Element) -> ParsedTestResult:
+    def _parse_testcase(self, testcase: Element) -> ParsedTestResult:
         """Parse individual test case."""
         name = testcase.get("name", "unnamed test")
         classname = testcase.get("classname", "")
@@ -179,7 +199,7 @@ class JUnitParser(BaseParser):
             return ParsedTestResult(name=test_name, line=line, passed=True)
 
     def _extract_file_path_from_suite(
-        self, testsuite: ET.Element, suite_name: str
+        self, testsuite: Element, suite_name: str
     ) -> str:
         """Extract file path from testsuite element."""
         # Look for file-related attributes

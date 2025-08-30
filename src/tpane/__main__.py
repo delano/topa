@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+
+# src/tpane/__main__.py
+
 """
 tpane - Reference implementation of TOPA (Test Output Protocol for AI)
 A standardized test output format designed for LLM consumption.
@@ -125,26 +128,32 @@ def get_parser(format_type: InputFormat) -> BaseParser:
 
 def read_input(input_file: Optional[str], max_size_mb: int = 50) -> str:
     """Read from file or stdin with size validation.
-    
+
     Args:
         input_file: File path or "-" for stdin
         max_size_mb: Maximum input size in megabytes
     """
     MAX_INPUT_SIZE = max_size_mb * 1024 * 1024
-    
+
     if input_file and input_file != "-":
         try:
             # Check file size before reading
             file_size = Path(input_file).stat().st_size
             if file_size > MAX_INPUT_SIZE:
-                print(f"Error: File '{input_file}' is too large ({file_size / (1024*1024):.1f}MB). "
-                      f"Maximum size is {max_size_mb}MB", file=sys.stderr)
+                print(
+                    f"Error: File '{input_file}' is too large ({file_size / (1024 * 1024):.1f}MB). "
+                    f"Maximum size is {max_size_mb}MB",
+                    file=sys.stderr,
+                )
                 sys.exit(1)
-                
+
             with open(input_file, "r", encoding="utf-8") as f:
                 content = f.read()
                 if len(content) > MAX_INPUT_SIZE:
-                    print(f"Error: File content is too large. Maximum size is {max_size_mb}MB", file=sys.stderr)
+                    print(
+                        f"Error: File content is too large. Maximum size is {max_size_mb}MB",
+                        file=sys.stderr,
+                    )
                     sys.exit(1)
                 return content
         except FileNotFoundError:
@@ -156,14 +165,19 @@ def read_input(input_file: Optional[str], max_size_mb: int = 50) -> str:
             )
             sys.exit(1)
         except OSError as e:
-            print(f"Error: Cannot read file '{input_file}': {e}", file=sys.stderr)
+            print(
+                f"Error: Cannot read file '{input_file}': {e}", file=sys.stderr
+            )
             sys.exit(1)
     else:
         # Read from stdin with size limit
         try:
             content = sys.stdin.read(MAX_INPUT_SIZE + 1)
             if len(content) > MAX_INPUT_SIZE:
-                print(f"Error: Input is too large. Maximum size is {max_size_mb}MB", file=sys.stderr)
+                print(
+                    f"Error: Input is too large. Maximum size is {max_size_mb}MB",
+                    file=sys.stderr,
+                )
                 sys.exit(1)
             return content
         except MemoryError:

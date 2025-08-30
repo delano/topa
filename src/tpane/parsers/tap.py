@@ -1,3 +1,5 @@
+# src/tpane/parsers/tap.py
+
 """
 TAP (Test Anything Protocol) Parser
 
@@ -94,7 +96,9 @@ class TAPParser(BaseParser):
                     # - A TODO test that passes is treated as a failure (unexpected success)
                     # This allows developers to mark known-failing tests without breaking builds
                     if passed:
-                        passed = False  # Unexpected pass - TODO should have failed
+                        passed = (
+                            False  # Unexpected pass - TODO should have failed
+                        )
                         pending_diagnostics.append(
                             "Unexpected pass - TODO item succeeded"
                         )

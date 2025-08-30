@@ -1,3 +1,5 @@
+# src/tpane/__init__.py
+
 """
 tpane - Reference implementation of TOPA (Test Output Protocol for AI)
 

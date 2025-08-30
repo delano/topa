@@ -1,3 +1,5 @@
+# src/tpane/parsers/base.py
+
 """
 Base Parser Interface
 
@@ -9,7 +11,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, Tuple
 
 try:
-    from ..core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
+    from ..core.schema import ParsedTestData
 except ImportError:
     # Fallback for direct execution
     import sys

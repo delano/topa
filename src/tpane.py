@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-TOPA - Test Output Protocol for AI
+tpane - Reference implementation of TOPA (Test Output Protocol for AI)
 A standardized test output format designed for LLM consumption.
 
 Usage:
-  topa [OPTIONS] [INPUT_FILE]
-  cat test_output.xml | topa --format junit --mode failures
+  tpane [OPTIONS] [INPUT_FILE]
+  cat test_output.xml | tpane --format junit --mode failures
 
 Options:
   --format FORMAT    Input format: junit, tap, pytest, rspec, auto [default: auto]
@@ -16,13 +16,13 @@ Options:
 
 Examples:
   # Convert JUnit XML to TOPA format
-  topa --format junit test-results.xml
+  tpane --format junit test-results.xml
 
   # Process pytest output with summary mode
-  pytest | topa --format pytest --mode summary
+  pytest | tpane --format pytest --mode summary
 
   # First failure only with token limit
-  topa --format rspec --mode first-failure --limit 1000 rspec.json
+  tpane --format rspec --mode first-failure --limit 1000 rspec.json
 """
 
 import argparse
@@ -173,15 +173,15 @@ def read_input(input_file: Optional[str], max_size_mb: int = 50) -> str:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="TOPA - Test Output Protocol for AI",
+        description="tpane - Reference implementation of TOPA (Test Output Protocol for AI)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  topa test-results.xml                    # Auto-detect format
-  pytest | topa --mode summary             # Process pytest output
-  topa --format junit --mode critical results.xml
-  topa --format rspec --limit 1000 rspec.json
-  topa --max-input-size 100 large-file.xml  # Allow 100MB input
+  tpane test-results.xml                    # Auto-detect format
+  pytest | tpane --mode summary             # Process pytest output
+  tpane --format junit --mode critical results.xml
+  tpane --format rspec --limit 1000 rspec.json
+  tpane --max-input-size 100 large-file.xml  # Allow 100MB input
         """,
     )
 
@@ -223,7 +223,7 @@ Examples:
     )
 
     parser.add_argument(
-        "--version", action="version", version=f"TOPA {VERSION}"
+        "--version", action="version", version=f"tpane {VERSION} (TOPA format)"
     )
 
     args = parser.parse_args()

@@ -46,8 +46,8 @@ git push origin v1.0.0
 
 ```bash
 # From Test PyPI
-pip install -i https://test.pypi.org/simple/ tpane.tpane
+pip install -i https://test.pypi.org/simple/ tpane
 
 # From PyPI
-pip install tpane.tpane
+pip install tpane
 ```

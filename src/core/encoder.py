@@ -338,7 +338,12 @@ class TOPAEncoder:
             parts = path.parts
             if len(parts) > 3:
                 # Keep last 2-3 parts if it makes sense
-                return str(Path(*parts[-2:]))  # e.g., spec/user_spec.rb
+                # Use joinpath to handle Windows drive letters properly
+                meaningful_parts = parts[-2:]
+                try:
+                    return '/'.join(meaningful_parts)  # Force forward slashes for consistency
+                except Exception:
+                    return path.name
 
             # Fall back to basename if nothing else works
             if len(str(path)) > 60:

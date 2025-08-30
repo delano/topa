@@ -123,10 +123,14 @@ def get_parser(format_type: InputFormat) -> BaseParser:
     return parser_class()
 
 
-def read_input(input_file: Optional[str]) -> str:
-    """Read from file or stdin with size validation."""
-    # Maximum input size: 50MB to prevent resource exhaustion
-    MAX_INPUT_SIZE = 50 * 1024 * 1024
+def read_input(input_file: Optional[str], max_size_mb: int = 50) -> str:
+    """Read from file or stdin with size validation.
+    
+    Args:
+        input_file: File path or "-" for stdin
+        max_size_mb: Maximum input size in megabytes
+    """
+    MAX_INPUT_SIZE = max_size_mb * 1024 * 1024
     
     if input_file and input_file != "-":
         try:
@@ -134,13 +138,13 @@ def read_input(input_file: Optional[str]) -> str:
             file_size = Path(input_file).stat().st_size
             if file_size > MAX_INPUT_SIZE:
                 print(f"Error: File '{input_file}' is too large ({file_size / (1024*1024):.1f}MB). "
-                      f"Maximum size is {MAX_INPUT_SIZE / (1024*1024):.0f}MB", file=sys.stderr)
+                      f"Maximum size is {max_size_mb}MB", file=sys.stderr)
                 sys.exit(1)
                 
             with open(input_file, "r", encoding="utf-8") as f:
                 content = f.read()
                 if len(content) > MAX_INPUT_SIZE:
-                    print(f"Error: File content is too large. Maximum size is {MAX_INPUT_SIZE / (1024*1024):.0f}MB", file=sys.stderr)
+                    print(f"Error: File content is too large. Maximum size is {max_size_mb}MB", file=sys.stderr)
                     sys.exit(1)
                 return content
         except FileNotFoundError:
@@ -159,7 +163,7 @@ def read_input(input_file: Optional[str]) -> str:
         try:
             content = sys.stdin.read(MAX_INPUT_SIZE + 1)
             if len(content) > MAX_INPUT_SIZE:
-                print(f"Error: Input is too large. Maximum size is {MAX_INPUT_SIZE / (1024*1024):.0f}MB", file=sys.stderr)
+                print(f"Error: Input is too large. Maximum size is {max_size_mb}MB", file=sys.stderr)
                 sys.exit(1)
             return content
         except MemoryError:
@@ -177,6 +181,7 @@ Examples:
   pytest | topa --mode summary             # Process pytest output
   topa --format junit --mode critical results.xml
   topa --format rspec --limit 1000 rspec.json
+  topa --max-input-size 100 large-file.xml  # Allow 100MB input
         """,
     )
 
@@ -211,6 +216,13 @@ Examples:
     )
 
     parser.add_argument(
+        "--max-input-size",
+        type=int,
+        default=50,
+        help="Maximum input file size in MB (default: 50)",
+    )
+
+    parser.add_argument(
         "--version", action="version", version=f"TOPA {VERSION}"
     )
 
@@ -218,7 +230,7 @@ Examples:
 
     try:
         # Read input
-        content = read_input(args.input_file)
+        content = read_input(args.input_file, args.max_input_size)
 
         if not content.strip():
             print("Error: No input provided", file=sys.stderr)

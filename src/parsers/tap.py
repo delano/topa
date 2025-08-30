@@ -86,16 +86,21 @@ class TAPParser(BaseParser):
                 # Determine if test passed
                 passed = status == "ok"
 
-                # Handle TODO/SKIP directives - these are special cases
+                # Handle TODO/SKIP directives - these are special cases in TAP
                 if directive == "TODO":
-                    # TODO tests that pass are actually unexpected
+                    # TODO directive semantics (per TAP specification):
+                    # - TODO tests are expected to fail (work in progress)
+                    # - A TODO test that fails is treated as a success (expected failure)
+                    # - A TODO test that passes is treated as a failure (unexpected success)
+                    # This allows developers to mark known-failing tests without breaking builds
                     if passed:
-                        passed = False  # Unexpected pass
+                        passed = False  # Unexpected pass - TODO should have failed
                         pending_diagnostics.append(
                             "Unexpected pass - TODO item succeeded"
                         )
                     else:
                         # TODO tests that fail are expected - treat as passed
+                        # This is counterintuitive but follows TAP standard behavior
                         passed = True
 
                 elif directive == "SKIP":

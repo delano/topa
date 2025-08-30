@@ -80,14 +80,25 @@ class JUnitParser(BaseParser):
             content = content[1:]
 
         # Only do minimal XML cleaning - don't escape structure tags
-        # Just fix double-encoded entities and unescaped lone ampersands in text
+        # Fix double-encoded entities (e.g., "&amp;amp;" → "&amp;")
+        # Pattern explanation: "&amp;" followed by valid XML entity names
+        # Examples: "&amp;amp;" → "&amp;", "&amp;lt;" → "&lt;"
         content = re.sub(
             r"&amp;(amp|lt|gt|quot|apos);", r"&\1;", content
         )
         
-        # Fix unescaped ampersands that aren't part of entities
-        # This regex finds & not followed by valid entity names
-        content = re.sub(r"&(?!(?:amp|lt|gt|quot|apos|#\d+|#x[0-9a-fA-F]+);)", "&amp;", content)
+        # Fix unescaped ampersands that aren't part of valid XML entities
+        # Negative lookahead pattern explanation:
+        # - &(?!...): Match & not followed by the lookahead pattern
+        # - (?:amp|lt|gt|quot|apos): Standard XML entities
+        # - #\d+: Decimal character references (e.g., &#39;)
+        # - #x[0-9a-fA-F]+: Hexadecimal character references (e.g., &#x27;)
+        # Examples: "Tom & Jerry" → "Tom &amp; Jerry", but "&amp;" stays "&amp;"
+        content = re.sub(
+            r"&(?!(?:amp|lt|gt|quot|apos|#\d+|#x[0-9a-fA-F]+);)", 
+            "&amp;", 
+            content
+        )
 
         return content.strip()
 

@@ -1,0 +1,17 @@
+version: "0.1"
+summary:
+  status: ERROR
+  tests:
+    total: 4
+    passed: 2
+    failed: 1
+    errors: 1
+  files:
+    total: 2
+    with_failures: 2
+  elapsed: 1.23s
+files_with_issues:
+  - file: tests/test_user.py
+    issues: 1
+  - file: tests/test_auth.py
+    issues: 1

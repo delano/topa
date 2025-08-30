@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="UserTest" tests="4" failures="2" errors="1" time="1.234">
+  <testcase name="test_validates_email" classname="UserTest" time="0.023">
+  </testcase>
+
+  <testcase name="test_requires_password" classname="UserTest" time="0.045">
+    <failure message="Expected true but was false">
+      Expected: true
+      Actual: false
+
+      Password validation should require minimum 8 characters
+    </failure>
+  </testcase>
+
+  <testcase name="test_saves_user" classname="UserTest" time="0.012">
+  </testcase>
+
+  <testcase name="test_authentication" classname="UserTest" time="0.001">
+    <error message="NoMethodError" type="NoMethodError">
+      NoMethodError: undefined method `authenticate' for nil:NilClass
+      /path/to/user_test.rb:45:in `test_authentication'
+    </error>
+  </testcase>
+</testsuite>

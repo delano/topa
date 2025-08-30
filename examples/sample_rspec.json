@@ -1,0 +1,56 @@
+{
+  "version": "3.10.2",
+  "summary": {
+    "duration": 1.234567,
+    "example_count": 4,
+    "failure_count": 2,
+    "pending_count": 0,
+    "error_count": 0
+  },
+  "examples": [
+    {
+      "id": "./spec/user_spec.rb[1:1]",
+      "description": "validates email format",
+      "full_description": "User validates email format",
+      "status": "passed",
+      "file_path": "./spec/user_spec.rb",
+      "line_number": 15,
+      "run_time": 0.023456
+    },
+    {
+      "id": "./spec/user_spec.rb[1:2]",
+      "description": "requires strong password",
+      "full_description": "User requires strong password",
+      "status": "failed",
+      "file_path": "./spec/user_spec.rb",
+      "line_number": 25,
+      "run_time": 0.045678,
+      "exception": {
+        "class": "RSpec::Expectations::ExpectationNotMetError",
+        "message": "Expected password validation to pass\n\nExpected: truthy value\nGot: false"
+      }
+    },
+    {
+      "id": "./spec/user_spec.rb[1:3]",
+      "description": "saves user successfully",
+      "full_description": "User saves user successfully",
+      "status": "passed",
+      "file_path": "./spec/user_spec.rb",
+      "line_number": 35,
+      "run_time": 0.012345
+    },
+    {
+      "id": "./spec/auth_spec.rb[1:1]",
+      "description": "authenticates valid credentials",
+      "full_description": "Authentication authenticates valid credentials",
+      "status": "failed",
+      "file_path": "./spec/auth_spec.rb",
+      "line_number": 12,
+      "run_time": 0.001234,
+      "exception": {
+        "class": "NoMethodError",
+        "message": "undefined method `authenticate' for nil:NilClass\n/path/to/auth_spec.rb:12:in `block (2 levels) in <top (required)>'"
+      }
+    }
+  ]
+}

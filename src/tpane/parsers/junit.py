@@ -1,3 +1,5 @@
+# src/tpane/parsers/junit.py
+
 """
 JUnit XML Parser
 
@@ -5,8 +7,8 @@ Parses JUnit XML test results into TOPA format.
 """
 
 import re
-import html
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List
+
 try:
     # Use defusedxml for security if available
     import defusedxml.ElementTree as ET
@@ -17,6 +19,7 @@ except ImportError:
 # For type hints, always use the standard library types
 if TYPE_CHECKING:
     import xml.etree.ElementTree as ET_types
+
     Element = ET_types.Element
 else:
     # Handle both defusedxml and standard library Element types
@@ -25,6 +28,7 @@ else:
     except AttributeError:
         # defusedxml doesn't expose Element directly, import from standard library
         import xml.etree.ElementTree as _stdlib_ET
+
         Element = _stdlib_ET.Element
 
 try:
@@ -67,11 +71,17 @@ class JUnitParser(BaseParser):
             return self._parse_as_text(content, f"XML Parse Error: {e}")
         except Exception as e:
             # Handle security exceptions from defusedxml and other XML issues
-            if "EntitiesForbidden" in str(type(e)) or "ExternalReferenceForbidden" in str(type(e)):
-                return self._parse_as_text(content, f"XML Security Error: Entity processing forbidden")
+            if "EntitiesForbidden" in str(
+                type(e)
+            ) or "ExternalReferenceForbidden" in str(type(e)):
+                return self._parse_as_text(
+                    content, "XML Security Error: Entity processing forbidden"
+                )
             else:
                 # Fall back for any other XML processing issues
-                return self._parse_as_text(content, f"XML Processing Error: {e}")
+                return self._parse_as_text(
+                    content, f"XML Processing Error: {e}"
+                )
 
     def _clean_xml(self, content: str) -> str:
         """Clean up common XML formatting issues."""
@@ -83,10 +93,8 @@ class JUnitParser(BaseParser):
         # Fix double-encoded entities (e.g., "&amp;amp;" → "&amp;")
         # Pattern explanation: "&amp;" followed by valid XML entity names
         # Examples: "&amp;amp;" → "&amp;", "&amp;lt;" → "&lt;"
-        content = re.sub(
-            r"&amp;(amp|lt|gt|quot|apos);", r"&\1;", content
-        )
-        
+        content = re.sub(r"&amp;(amp|lt|gt|quot|apos);", r"&\1;", content)
+
         # Fix unescaped ampersands that aren't part of valid XML entities
         # Negative lookahead pattern explanation:
         # - &(?!...): Match & not followed by the lookahead pattern
@@ -95,9 +103,9 @@ class JUnitParser(BaseParser):
         # - #x[0-9a-fA-F]+: Hexadecimal character references (e.g., &#x27;)
         # Examples: "Tom & Jerry" → "Tom &amp; Jerry", but "&amp;" stays "&amp;"
         content = re.sub(
-            r"&(?!(?:amp|lt|gt|quot|apos|#\d+|#x[0-9a-fA-F]+);)", 
-            "&amp;", 
-            content
+            r"&(?!(?:amp|lt|gt|quot|apos|#\d+|#x[0-9a-fA-F]+);)",
+            "&amp;",
+            content,
         )
 
         return content.strip()

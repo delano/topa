@@ -23,7 +23,7 @@ jobs:
 
       - name: Convert to TOPA format
         run: |
-          python topa/src/topa.py --format junit --mode summary test-results.xml > test-summary.yaml
+          python topa/src/tpane.py --format junit --mode summary test-results.xml > test-summary.yaml
 
       - name: Upload TOPA output
         uses: actions/upload-artifact@v3
@@ -38,7 +38,7 @@ jobs:
 test:
   script:
     - pytest --junit-xml=test-results.xml || true
-    - python topa/src/topa.py --format junit test-results.xml > test-analysis.yaml
+    - python topa/src/tpane.py --format junit test-results.xml > test-analysis.yaml
   artifacts:
     reports:
       junit: test-results.xml
@@ -52,14 +52,14 @@ test:
 
 ```bash
 # Basic pytest integration
-pytest tests/ | python topa.py --format pytest --mode failures
+pytest tests/ | python tpane.py --format pytest --mode failures
 
 # With JSON output
 pytest --json-report --json-report-file=results.json
-python topa.py --format pytest results.json
+python tpane.py --format pytest results.json
 
 # In CI with token limits
-pytest | python topa.py --mode summary --limit 1000
+pytest | python tpane.py --mode summary --limit 1000
 ```
 
 ### Ruby (RSpec)
@@ -67,26 +67,26 @@ pytest | python topa.py --mode summary --limit 1000
 ```bash
 # JSON format (recommended)
 bundle exec rspec --format json --out rspec.json
-python topa.py --format rspec rspec.json
+python tpane.py --format rspec rspec.json
 
 # Direct pipe (text parsing)
-bundle exec rspec | python topa.py --format rspec
+bundle exec rspec | python tpane.py --format rspec
 
 # Critical errors only
-bundle exec rspec --format json | python topa.py --mode critical
+bundle exec rspec --format json | python tpane.py --mode critical
 ```
 
 ### Java (JUnit)
 
 ```bash
 # Maven surefire reports
-python topa.py --format junit target/surefire-reports/TEST-*.xml
+python tpane.py --format junit target/surefire-reports/TEST-*.xml
 
 # Gradle test reports
-python topa.py --format junit build/test-results/test/TEST-*.xml
+python tpane.py --format junit build/test-results/test/TEST-*.xml
 
 # Single file
-python topa.py --format junit build/test-results/test/TEST-MyTest.xml
+python tpane.py --format junit build/test-results/test/TEST-MyTest.xml
 ```
 
 ### JavaScript (Jest)
@@ -94,10 +94,10 @@ python topa.py --format junit build/test-results/test/TEST-MyTest.xml
 ```bash
 # Jest with JUnit reporter
 npm test -- --reporters=jest-junit
-python topa.py --format junit junit.xml
+python tpane.py --format junit junit.xml
 
 # Custom Jest integration (requires adapter)
-npm test | python topa.py --format jest  # (future enhancement)
+npm test | python tpane.py --format jest  # (future enhancement)
 ```
 
 ## AI Tool Integration
@@ -111,7 +111,7 @@ import yaml
 
 # Run tests and get TOPA output
 result = subprocess.run([
-    'python', 'topa.py', '--mode', 'failures', 'test-results.xml'
+    'python', 'tpane.py', '--mode', 'failures', 'test-results.xml'
 ], capture_output=True, text=True)
 
 topa_output = result.stdout
@@ -136,7 +136,7 @@ import subprocess
 
 # Get TOPA output with appropriate token limit for Claude
 result = subprocess.run([
-    'python', 'topa.py', '--limit', '8000', '--mode', 'first-failure'
+    'python', 'tpane.py', '--limit', '8000', '--mode', 'first-failure'
 ], capture_output=True, text=True)
 
 client = anthropic.Anthropic(api_key="your-api-key")
@@ -178,7 +178,7 @@ print(response.content[0].text)
 " Add to .vimrc or init.vim
 function! TOPAAnalyze()
     let test_output = system('pytest --tb=short 2>&1')
-    let topa_output = system('echo "' . escape(test_output, '"') . '" | python ~/topa/src/topa.py --mode critical')
+    let topa_output = system('echo "' . escape(test_output, '"') . '" | python ~/topa/src/tpane.py --mode critical')
 
     " Display in new buffer
     new
@@ -214,7 +214,7 @@ class MyFormatParser(BaseParser):
 2. **Register in main CLI**:
 
 ```python
-# src/topa.py
+# src/tpane.py
 from .parsers.myformat import MyFormatParser
 
 class InputFormat(Enum):
@@ -244,16 +244,16 @@ def detect_format(content: str) -> InputFormat:
 
 ```bash
 # For different model contexts
-python topa.py --limit 2000   # GPT-3.5 friendly
-python topa.py --limit 8000   # GPT-4 standard
-python topa.py --limit 32000  # GPT-4 Turbo
-python topa.py --limit 100000 # Claude-3 Opus
+python tpane.py --limit 2000   # GPT-3.5 friendly
+python tpane.py --limit 8000   # GPT-4 standard
+python tpane.py --limit 32000  # GPT-4 Turbo
+python tpane.py --limit 100000 # Claude-3 Opus
 
 # Focus modes for different needs
-python topa.py --mode summary      # Overview only (~200 tokens)
-python topa.py --mode critical     # Errors only (~500-1000 tokens)
-python topa.py --mode first-failure # One per file (~1000-2000 tokens)
-python topa.py --mode failures     # All failures (~2000-5000 tokens)
+python tpane.py --mode summary      # Overview only (~200 tokens)
+python tpane.py --mode critical     # Errors only (~500-1000 tokens)
+python tpane.py --mode first-failure # One per file (~1000-2000 tokens)
+python tpane.py --mode failures     # All failures (~2000-5000 tokens)
 ```
 
 ### Batching Multiple Test Runs
@@ -262,7 +262,7 @@ python topa.py --mode failures     # All failures (~2000-5000 tokens)
 # Process multiple test result files
 for file in test-results-*.xml; do
     echo "=== $file ==="
-    python topa.py --format junit --mode summary "$file"
+    python tpane.py --format junit --mode summary "$file"
 done > combined-analysis.yaml
 ```
 
@@ -279,10 +279,10 @@ done > combined-analysis.yaml
 
 ```bash
 # Verbose mode (if added)
-python topa.py --verbose test-results.xml
+python tpane.py --verbose test-results.xml
 
 # Debug token usage
-python topa.py --limit 500 --mode failures test-results.xml
+python tpane.py --limit 500 --mode failures test-results.xml
 # Check if output is truncated, adjust limit accordingly
 ```
 
@@ -294,11 +294,11 @@ python topa.py --limit 500 --mode failures test-results.xml
 FROM python:3.9-slim
 
 WORKDIR /app
-COPY src/ /app/topa/
+COPY src/ /app/tpane/
 RUN pip install pyyaml
 
-# Usage: docker run topa-image python topa/topa.py --format junit /data/results.xml
-ENTRYPOINT ["python", "topa/topa.py"]
+# Usage: docker run tpane-image python tpane/tpane.py --format junit /data/results.xml
+ENTRYPOINT ["python", "tpane/tpane.py"]
 ```
 
 ### Lambda Function
@@ -306,7 +306,7 @@ ENTRYPOINT ["python", "topa/topa.py"]
 ```python
 import json
 import boto3
-from topa import TOPAEncoder, PytestParser
+from tpane import TOPAEncoder, PytestParser
 
 def lambda_handler(event, context):
     # Parse test output from event

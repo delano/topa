@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
+
+# src/tpane/__main__.py
+
 """
-TOPA - Test Output Protocol for AI
+tpane - Reference implementation of TOPA (Test Output Protocol for AI)
 A standardized test output format designed for LLM consumption.
 
 Usage:
-  topa [OPTIONS] [INPUT_FILE]
-  cat test_output.xml | topa --format junit --mode failures
+  tpane [OPTIONS] [INPUT_FILE]
+  cat test_output.xml | tpane --format junit --mode failures
 
 Options:
   --format FORMAT    Input format: junit, tap, pytest, rspec, auto [default: auto]
@@ -16,13 +19,13 @@ Options:
 
 Examples:
   # Convert JUnit XML to TOPA format
-  topa --format junit test-results.xml
+  tpane --format junit test-results.xml
 
   # Process pytest output with summary mode
-  pytest | topa --format pytest --mode summary
+  pytest | tpane --format pytest --mode summary
 
   # First failure only with token limit
-  topa --format rspec --mode first-failure --limit 1000 rspec.json
+  tpane --format rspec --mode first-failure --limit 1000 rspec.json
 """
 
 import argparse
@@ -125,26 +128,32 @@ def get_parser(format_type: InputFormat) -> BaseParser:
 
 def read_input(input_file: Optional[str], max_size_mb: int = 50) -> str:
     """Read from file or stdin with size validation.
-    
+
     Args:
         input_file: File path or "-" for stdin
         max_size_mb: Maximum input size in megabytes
     """
     MAX_INPUT_SIZE = max_size_mb * 1024 * 1024
-    
+
     if input_file and input_file != "-":
         try:
             # Check file size before reading
             file_size = Path(input_file).stat().st_size
             if file_size > MAX_INPUT_SIZE:
-                print(f"Error: File '{input_file}' is too large ({file_size / (1024*1024):.1f}MB). "
-                      f"Maximum size is {max_size_mb}MB", file=sys.stderr)
+                print(
+                    f"Error: File '{input_file}' is too large ({file_size / (1024 * 1024):.1f}MB). "
+                    f"Maximum size is {max_size_mb}MB",
+                    file=sys.stderr,
+                )
                 sys.exit(1)
-                
+
             with open(input_file, "r", encoding="utf-8") as f:
                 content = f.read()
                 if len(content) > MAX_INPUT_SIZE:
-                    print(f"Error: File content is too large. Maximum size is {max_size_mb}MB", file=sys.stderr)
+                    print(
+                        f"Error: File content is too large. Maximum size is {max_size_mb}MB",
+                        file=sys.stderr,
+                    )
                     sys.exit(1)
                 return content
         except FileNotFoundError:
@@ -156,14 +165,19 @@ def read_input(input_file: Optional[str], max_size_mb: int = 50) -> str:
             )
             sys.exit(1)
         except OSError as e:
-            print(f"Error: Cannot read file '{input_file}': {e}", file=sys.stderr)
+            print(
+                f"Error: Cannot read file '{input_file}': {e}", file=sys.stderr
+            )
             sys.exit(1)
     else:
         # Read from stdin with size limit
         try:
             content = sys.stdin.read(MAX_INPUT_SIZE + 1)
             if len(content) > MAX_INPUT_SIZE:
-                print(f"Error: Input is too large. Maximum size is {max_size_mb}MB", file=sys.stderr)
+                print(
+                    f"Error: Input is too large. Maximum size is {max_size_mb}MB",
+                    file=sys.stderr,
+                )
                 sys.exit(1)
             return content
         except MemoryError:
@@ -173,15 +187,15 @@ def read_input(input_file: Optional[str], max_size_mb: int = 50) -> str:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="TOPA - Test Output Protocol for AI",
+        description="tpane - Reference implementation of TOPA (Test Output Protocol for AI)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  topa test-results.xml                    # Auto-detect format
-  pytest | topa --mode summary             # Process pytest output
-  topa --format junit --mode critical results.xml
-  topa --format rspec --limit 1000 rspec.json
-  topa --max-input-size 100 large-file.xml  # Allow 100MB input
+  tpane test-results.xml                    # Auto-detect format
+  pytest | tpane --mode summary             # Process pytest output
+  tpane --format junit --mode critical results.xml
+  tpane --format rspec --limit 1000 rspec.json
+  tpane --max-input-size 100 large-file.xml  # Allow 100MB input
         """,
     )
 
@@ -223,7 +237,7 @@ Examples:
     )
 
     parser.add_argument(
-        "--version", action="version", version=f"TOPA {VERSION}"
+        "--version", action="version", version=f"tpane {VERSION} (TOPA format)"
     )
 
     args = parser.parse_args()

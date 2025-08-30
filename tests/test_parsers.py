@@ -10,10 +10,10 @@ from pathlib import Path
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from parsers.junit import JUnitParser
-from parsers.pytest import PytestParser
-from parsers.rspec import RSpecParser
-from parsers.tap import TAPParser
+from tpane.parsers.junit import JUnitParser
+from tpane.parsers.pytest import PytestParser
+from tpane.parsers.rspec import RSpecParser
+from tpane.parsers.tap import TAPParser
 
 
 class TestJUnitParser(unittest.TestCase):
@@ -176,7 +176,7 @@ class TestTokenBudget(unittest.TestCase):
 
     def setUp(self):
         sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-        from core.token_budget import TokenBudget
+        from tpane.core.token_budget import TokenBudget
 
         self.TokenBudget = TokenBudget
 
@@ -259,8 +259,8 @@ class TestEdgeCases(unittest.TestCase):
     def test_path_normalization_edge_cases(self):
         """Test path normalization with various edge cases."""
         sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
-        from core.encoder import TOPAEncoder
-        from core.token_budget import TokenBudget
+        from tpane.core.encoder import TOPAEncoder
+        from tpane.core.token_budget import TokenBudget
         
         encoder = TOPAEncoder('failures', TokenBudget(1000))
         
@@ -283,7 +283,7 @@ class TestEdgeCases(unittest.TestCase):
     def test_token_budget_edge_cases(self):
         """Test token budget with edge cases."""
         sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
-        from core.token_budget import TokenBudget
+        from tpane.core.token_budget import TokenBudget
         
         # Zero budget
         zero_budget = TokenBudget(0)
@@ -405,8 +405,8 @@ class TestSecurityEdgeCases(unittest.TestCase):
     def test_path_normalization_security_display(self):
         """Test path normalization handles potentially malicious paths safely for display."""
         sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
-        from core.encoder import TOPAEncoder
-        from core.token_budget import TokenBudget
+        from tpane.core.encoder import TOPAEncoder
+        from tpane.core.token_budget import TokenBudget
         
         encoder = TOPAEncoder('failures', TokenBudget(1000))
         

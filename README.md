@@ -1,8 +1,16 @@
-# TOPA - Test Output Protocol for AI
+# tpane
 
-**A standardized test output format designed for LLM consumption**
+**The reference implementation of the TOPA (Test Output Protocol for AI) standard**
 
-TOPA (Test Output Protocol for AI) addresses the token efficiency, structured parsing, and cross-tool integration needs of AI-powered development workflows.
+## Why "tpane"?
+
+The name has a dual meaning that perfectly captures the tool's purpose:
+
+**1. T-Pain Auto-tune Analogy**
+Just like T-Pain's auto-tune transforms raw vocals into polished audio, `tpane` transforms verbose test outputs into clean, structured formats optimized for AI analysis.
+
+**2. Test Output for Context Window**
+`tpane` creates a clear "window pane" into your test results - but more importantly, it optimizes them to fit within AI context windows. No more truncated logs or overwhelming verbosity when analyzing test failures.
 
 ## Key Benefits
 
@@ -18,238 +26,184 @@ TOPA (Test Output Protocol for AI) addresses the token efficiency, structured pa
 pip install pyyaml
 
 # Convert JUnit XML to TOPA format
-python src/topa.py --format junit test-results.xml
+python src/tpane.py --format junit test-results.xml
 
 # Process pytest output with summary mode
-pytest | python src/topa.py --format pytest --mode summary
+pytest | python src/tpane.py --format pytest --mode summary
 
 # Auto-detect format and use failures mode (default)
-python src/topa.py test_output.txt
+python src/tpane.py test_output.txt
 ```
 
 ## Usage Examples
 
-### From Files
+### Basic Usage
 ```bash
-# JUnit XML with critical errors only
-python src/topa.py --format junit --mode critical results.xml
+# Auto-detect format and show failures (default mode)
+tpane test_output.txt
 
-# RSpec JSON with first failure per file
-python src/topa.py --format rspec --mode first-failure rspec.json
+# Specify format explicitly
+tpane --format junit test-results.xml
+tpane --format pytest pytest_output.txt
+tpane --format rspec rspec_results.json
+tpane --format tap tap_output.txt
 
-# Custom token limit
-python src/topa.py --limit 1000 pytest_output.txt
+# Process from stdin
+pytest | tpane --format pytest
+npm test | tpane --format tap
 ```
 
-### From Pipes
+### Focus Modes
 ```bash
-# Pytest to TOPA summary
-pytest tests/ | python src/topa.py --mode summary
+# Show summary only (minimal token usage)
+tpane --mode summary test_output.txt
 
-# RSpec to TOPA with failures
-bundle exec rspec --format json | python src/topa.py --format rspec
+# Show critical failures only (errors and key failures)
+tpane --mode critical test_output.txt
 
-# TAP output processing
-prove tests/ | python src/topa.py --format tap
+# Show all failures (default)
+tpane --mode failures test_output.txt
+
+# Show only the first failure (for quick debugging)
+tpane --mode first-failure test_output.txt
 ```
 
-## Focus Modes
+### Token Management
+```bash
+# Set custom token budget (default: 2000)
+tpane --limit 1000 large_test_output.xml
+tpane --limit 5000 comprehensive_results.json
 
-TOPA supports different detail levels based on your needs:
+# Handle large files (default max: 50MB)
+tpane --max-input-size 100 very_large_results.xml
+```
 
-### `summary` - High-level overview
+## About TOPA
+
+TOPA (Test Output Protocol for AI) is a standardized test output format designed specifically for LLM consumption. It addresses the token efficiency, structured parsing, and cross-tool integration needs of AI-powered development workflows.
+
+**TOPA Design Principles:**
+1. **Token Efficiency**: Minimize tokens while preserving semantic completeness
+2. **Structured Data**: Consistent schema for reliable programmatic access
+3. **Semantic Clarity**: Clear causality (what failed and why) with actionable context
+4. **Progressive Disclosure**: Multiple detail levels based on available budget
+5. **Cross-Framework**: Language and tool agnostic design
+
+## TOPA Output Format
+
+The `tpane` tool outputs YAML-formatted TOPA data that includes:
+
+- **Test Summary**: Total, passed, failed, error counts and execution time
+- **File Results**: Organized by test file with path normalization
+- **Test Details**: Individual test results with failure context
+- **Token Metadata**: Budget usage and truncation indicators
+- **Semantic Enhancement**: Extracted assertions, expected/actual values
+
+### Example Output
 ```yaml
-version: "0.1"
 summary:
-  status: FAIL
-  tests: {total: 15, passed: 12, failed: 2, errors: 1}
-  files: {total: 3, with_failures: 2}
-  elapsed: "1.2s"
-
-files_with_issues:
-  - file: "user_test.rb"
-    issues: 2
-  - file: "auth_test.rb"
-    issues: 1
+  total_tests: 156
+  passed_tests: 142
+  failed_tests: 12
+  error_tests: 2
+  execution_time: "23.45s"
+  
+file_results:
+  - file_path: "spec/user_validation_spec.rb"
+    test_count: 8
+    failed_count: 2
+    test_results:
+      - name: "validates email format"
+        passed: false
+        expected: "valid email"
+        actual: "invalid@"
+        error_message: "Email format validation failed"
+        location: "spec/user_validation_spec.rb:42"
+        
+token_metadata:
+  estimated_tokens: 1847
+  budget_limit: 2000
+  truncated: false
+  focus_mode: "failures"
 ```
 
-### `critical` - Errors only (skip assertion failures)
-```yaml
-version: "0.1"
-summary:
-  status: ERROR
-  tests: {total: 15, passed: 12, failed: 2, errors: 1}
-  files: {total: 3, with_failures: 1}
-  elapsed: "1.2s"
+## Installation & Development
 
-failures:
-  - file: "auth_test.rb"
-    tests:
-      - line: 23
-        name: "login with invalid credentials"
-        type: error
-        error: "NoMethodError: undefined method `authenticate'"
+```bash
+# Clone the repository
+git clone https://github.com/delano/tpane.git
+cd tpane
+
+# Install dependencies
+pip install pyyaml
+
+# Run tests
+python -m pytest tests/ -v
+
+# Run the tool directly
+python src/tpane.py --help
 ```
 
-### `failures` - All failures and errors (default)
-```yaml
-version: "0.1"
-summary:
-  status: FAIL
-  tests: {total: 15, passed: 12, failed: 2, errors: 1}
-  files: {total: 3, with_failures: 2}
-  elapsed: "1.2s"
+## Supported Test Formats
 
-failures:
-  - file: "user_test.rb"
-    tests:
-      - line: 45
-        name: "validates email format"
-        type: failure
-        expected: "true"
-        actual: "false"
-```
-
-### `first-failure` - First failure per file only
-```yaml
-version: "0.1"
-summary:
-  status: FAIL
-  tests: {total: 15, passed: 12, failed: 2, errors: 1}
-  files: {total: 3, with_failures: 2}
-  elapsed: "1.2s"
-
-failures:
-  - file: "user_test.rb"
-    tests:
-      - line: 45
-        name: "validates email format"
-        type: failure
-        expected: "true"
-        actual: "false"
-    truncated: 1  # Additional failures not shown
-```
-
-## Supported Input Formats
-
-| Format | Description | Auto-detect |
-|--------|-------------|-------------|
-| **junit** | JUnit XML test results | Yes |
-| **pytest** | pytest console output | Yes |
-| **rspec** | RSpec JSON format | Yes |
-| **tap** | Test Anything Protocol | Yes |
-
-Use `--format auto` (default) for automatic detection, or specify explicitly for better performance.
-
-## Token Optimization
-
-TOPA uses several strategies to minimize token usage:
-
-- **Hierarchical organization** - Group by file to avoid repeating paths
-- **Smart truncation** - Preserve key information, indicate truncation clearly
-- **Relative paths** - `spec/user_spec.rb` instead of `/full/path/spec/user_spec.rb`
-- **Progressive disclosure** - Show more detail only when token budget allows
-- **Focus modes** - Customize detail level based on needs
+| Format | Auto-Detection | Status |
+|--------|----------------|---------|
+| **JUnit XML** | ✅ `<?xml` + `<testsuite` | Full support |
+| **pytest** | ✅ Common patterns | Full support |
+| **TAP** | ✅ `1..` or `TAP version` | Full support |
+| **RSpec JSON** | ✅ `examples` + `summary` keys | Full support |
 
 ## Integration Examples
 
+### GitHub Actions
+```yaml
+- name: Run tests and generate TOPA output
+  run: |
+    pytest --junitxml=results.xml
+    python src/tpane.py --format junit results.xml > topa_output.yaml
+    
+- name: Analyze failures with AI
+  uses: your-ai-analysis-action@v1
+  with:
+    test_results: topa_output.yaml
+```
+
 ### CI/CD Pipeline
 ```bash
-# In GitHub Actions or similar
-pytest --junit-xml=results.xml || true
-python topa.py --format junit --mode summary results.xml > test_summary.yaml
+#!/bin/bash
+# Run tests and process with tpane
+npm test > test_output.txt 2>&1
+python src/tpane.py --format tap test_output.txt > topa_results.yaml
 
-# Use test_summary.yaml for LLM-powered analysis
+# Send to AI analysis service
+curl -X POST https://your-ai-service/analyze \
+  -H "Content-Type: text/yaml" \
+  --data-binary @topa_results.yaml
 ```
 
-### Development Workflow
-```bash
-# Quick test + AI analysis
-pytest tests/ | python topa.py --mode critical > failures.yaml
-# Send failures.yaml to your AI assistant for help
-```
+## Technical Implementation
 
-## Project Structure
+`tpane` implements the TOPA standard through:
 
-```
-topa/
-|-- spec/TOPA-v0.1.md          # Format specification
-|-- src/
-|   |-- topa.py               # Main CLI tool
-|   |-- core/
-|   |   |-- schema.py         # Data structures
-|   |   |-- encoder.py        # TOPA format encoding
-|   |   `-- token_budget.py   # Token management
-|   `-- parsers/
-|       |-- junit.py          # JUnit XML parser
-|       |-- pytest.py         # pytest output parser
-|       |-- rspec.py          # RSpec JSON parser
-|       `-- tap.py            # TAP parser
-|-- examples/                  # Sample inputs/outputs
-|-- tests/                     # Test suite
-`-- docs/                      # Additional documentation
-```
+- **Smart Format Detection**: Automatic identification of input test format
+- **Modular Parsers**: Extensible parser architecture for new test frameworks
+- **Token Budget Management**: Intelligent truncation and prioritization
+- **Path Normalization**: Consistent file path handling across platforms
+- **Error Recovery**: Graceful handling of malformed or incomplete test output
 
-## Value Proposition
+## Contributing
 
-**For AI Tool Developers:**
-- One parser instead of dozens
-- Predictable token usage
-- Consistent semantic structure
+We welcome contributions to both the TOPA standard and the `tpane` reference implementation:
 
-**For Test Framework Maintainers:**
-- Clear target for AI integration
-- Reference implementation available
-- Community-driven evolution
-
-**For End Users:**
-- Lower AI costs (60-80% reduction)
-- Better AI understanding of test failures
-- Faster debugging cycles
-
-## Development
-
-### Prerequisites
-- Python 3.7+
-- PyYAML for output formatting
-
-### Running Tests
-```bash
-# Run all tests
-python -m pytest tests/
-
-# Test specific parser
-python -m pytest tests/test_parsers.py::TestJUnitParser
-
-# Test with sample data
-python src/topa.py examples/sample_junit.xml
-```
-
-### Contributing
-
-1. **Add new parser**: Extend `BaseParser` in `src/parsers/`
-2. **Improve format detection**: Update patterns in `src/topa.py`
-3. **Enhance token optimization**: Modify `src/core/token_budget.py`
-4. **Add examples**: Include sample inputs/outputs in `examples/`
-
-## Specification
-
-The complete TOPA v0.1 specification is available in [`spec/TOPA-v0.1.md`](spec/TOPA-v0.1.md).
-
-## Why TOPA?
-
-Test output parsing is a recurring problem for AI-powered development tools. Every AI coding assistant solves the same challenge - parsing diverse test outputs while managing token constraints.
-
-TOPA provides a standardized solution inspired by successful protocols like Language Server Protocol and Test Anything Protocol.
-
-**Token Economics**: A 60-80% reduction represents significant cost savings at scale. For teams running AI-assisted code review on hundreds of test runs daily, this could save dozens of dollars monthly.
+- **Standard Evolution**: Propose enhancements to the TOPA specification
+- **Parser Extensions**: Add support for new test frameworks
+- **Performance Optimization**: Improve token efficiency and processing speed
+- **Integration Examples**: Share real-world usage patterns
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License - see [LICENSE](LICENSE) file for details.
 
-## References
+---
 
-- [Tryouts Agent Mode](https://github.com/delano/tryouts/pull/37) - Original proof of concept
-- [Test Anything Protocol](https://testanything.org/) - Inspiration for test standardization
-- [Language Server Protocol](https://langserver.org/) - Model for cross-tool interoperability
+**tpane** - Because your test output deserves the auto-tune treatment! 🎤✨

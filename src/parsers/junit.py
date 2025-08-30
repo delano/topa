@@ -19,7 +19,13 @@ if TYPE_CHECKING:
     import xml.etree.ElementTree as ET_types
     Element = ET_types.Element
 else:
-    Element = ET.Element
+    # Handle both defusedxml and standard library Element types
+    try:
+        Element = ET.Element
+    except AttributeError:
+        # defusedxml doesn't expose Element directly, import from standard library
+        import xml.etree.ElementTree as _stdlib_ET
+        Element = _stdlib_ET.Element
 
 try:
     from ..core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
@@ -59,6 +65,13 @@ class JUnitParser(BaseParser):
         except ET.ParseError as e:
             # Fall back to text-based parsing for malformed XML
             return self._parse_as_text(content, f"XML Parse Error: {e}")
+        except Exception as e:
+            # Handle security exceptions from defusedxml and other XML issues
+            if "EntitiesForbidden" in str(type(e)) or "ExternalReferenceForbidden" in str(type(e)):
+                return self._parse_as_text(content, f"XML Security Error: Entity processing forbidden")
+            else:
+                # Fall back for any other XML processing issues
+                return self._parse_as_text(content, f"XML Processing Error: {e}")
 
     def _clean_xml(self, content: str) -> str:
         """Clean up common XML formatting issues."""
@@ -66,18 +79,15 @@ class JUnitParser(BaseParser):
         if content.startswith("\ufeff"):
             content = content[1:]
 
-        # Fix common encoding issues using html.escape for safety
-        # Only escape if not already escaped
-        if "&amp;" not in content and "&lt;" not in content:
-            # Escape special characters that aren't already escaped
-            content = content.replace("&", "&amp;")
-            content = content.replace("<", "&lt;")
-            content = content.replace(">", "&gt;")
-        
-        # Don't double-encode already escaped entities
+        # Only do minimal XML cleaning - don't escape structure tags
+        # Just fix double-encoded entities and unescaped lone ampersands in text
         content = re.sub(
             r"&amp;(amp|lt|gt|quot|apos);", r"&\1;", content
         )
+        
+        # Fix unescaped ampersands that aren't part of entities
+        # This regex finds & not followed by valid entity names
+        content = re.sub(r"&(?!(?:amp|lt|gt|quot|apos|#\d+|#x[0-9a-fA-F]+);)", "&amp;", content)
 
         return content.strip()
 

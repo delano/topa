@@ -124,11 +124,25 @@ def get_parser(format_type: InputFormat) -> BaseParser:
 
 
 def read_input(input_file: Optional[str]) -> str:
-    """Read from file or stdin."""
+    """Read from file or stdin with size validation."""
+    # Maximum input size: 50MB to prevent resource exhaustion
+    MAX_INPUT_SIZE = 50 * 1024 * 1024
+    
     if input_file and input_file != "-":
         try:
+            # Check file size before reading
+            file_size = Path(input_file).stat().st_size
+            if file_size > MAX_INPUT_SIZE:
+                print(f"Error: File '{input_file}' is too large ({file_size / (1024*1024):.1f}MB). "
+                      f"Maximum size is {MAX_INPUT_SIZE / (1024*1024):.0f}MB", file=sys.stderr)
+                sys.exit(1)
+                
             with open(input_file, "r", encoding="utf-8") as f:
-                return f.read()
+                content = f.read()
+                if len(content) > MAX_INPUT_SIZE:
+                    print(f"Error: File content is too large. Maximum size is {MAX_INPUT_SIZE / (1024*1024):.0f}MB", file=sys.stderr)
+                    sys.exit(1)
+                return content
         except FileNotFoundError:
             print(f"Error: File '{input_file}' not found", file=sys.stderr)
             sys.exit(1)
@@ -137,9 +151,20 @@ def read_input(input_file: Optional[str]) -> str:
                 f"Error: Cannot decode '{input_file}' as UTF-8", file=sys.stderr
             )
             sys.exit(1)
+        except OSError as e:
+            print(f"Error: Cannot read file '{input_file}': {e}", file=sys.stderr)
+            sys.exit(1)
     else:
-        # Read from stdin
-        return sys.stdin.read()
+        # Read from stdin with size limit
+        try:
+            content = sys.stdin.read(MAX_INPUT_SIZE + 1)
+            if len(content) > MAX_INPUT_SIZE:
+                print(f"Error: Input is too large. Maximum size is {MAX_INPUT_SIZE / (1024*1024):.0f}MB", file=sys.stderr)
+                sys.exit(1)
+            return content
+        except MemoryError:
+            print("Error: Input is too large to process", file=sys.stderr)
+            sys.exit(1)
 
 
 def main():

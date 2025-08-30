@@ -207,6 +207,99 @@ class TestTokenBudget(unittest.TestCase):
             truncated.endswith("...") or len(truncated) < len(long_text)
         )
 
+class TestEdgeCases(unittest.TestCase):
+    """Test edge cases and error conditions."""
+    
+    def test_empty_input(self):
+        """Test parsers handle empty input gracefully."""
+        parsers = [JUnitParser(), PytestParser(), RSpecParser(), TAPParser()]
+        
+        for parser in parsers:
+            with self.subTest(parser=parser.__class__.__name__):
+                result = parser.parse("")
+                self.assertIsInstance(result, type(parser.parse("")))
+                self.assertEqual(result.total_tests, 0)
+    
+    def test_malformed_xml(self):
+        """Test JUnit parser handles malformed XML."""
+        parser = JUnitParser()
+        
+        malformed_xml = "<testsuite><testcase name='test' unclosed>"
+        result = parser.parse(malformed_xml)
+        
+        # Should fallback to text parsing and not crash
+        self.assertIsInstance(result, type(parser.parse("")))
+    
+    def test_unicode_handling(self):
+        """Test parsers handle Unicode content."""
+        parser = JUnitParser()
+        
+        unicode_xml = '''<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="UnicodeTest" tests="1" failures="1">
+  <testcase name="test_unicode" classname="TestClass">
+    <failure message="Unicode test: 你好世界 🚀 ñáñá">Unicode failure: émojis 🎉</failure>
+  </testcase>
+</testsuite>'''
+        
+        result = parser.parse(unicode_xml)
+        self.assertEqual(result.total_tests, 1)
+        self.assertEqual(result.failed_tests, 1)
+    
+    def test_large_numbers(self):
+        """Test parsers handle large test counts."""
+        parser = TAPParser()
+        
+        # TAP with large plan number
+        large_tap = "1..999999\nok 1 - test passes"
+        result = parser.parse(large_tap)
+        
+        # Should handle gracefully (may add error for plan mismatch)
+        self.assertGreaterEqual(result.total_tests, 1)
+    
+    def test_path_normalization_edge_cases(self):
+        """Test path normalization with various edge cases."""
+        sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
+        from core.encoder import TOPAEncoder
+        from core.token_budget import TokenBudget
+        
+        encoder = TOPAEncoder('failures', TokenBudget(1000))
+        
+        # Test various path formats
+        test_paths = [
+            "",  # Empty path
+            "simple.rb",  # Simple filename
+            "/very/long/path/to/some/deeply/nested/test/file.rb",  # Long path
+            "C:\\Windows\\Path\\test.rb",  # Windows path
+            "path/with spaces/test.rb",  # Path with spaces
+            "файл.rb",  # Unicode filename
+        ]
+        
+        for path in test_paths:
+            with self.subTest(path=path):
+                normalized = encoder._normalize_path(path)
+                self.assertIsInstance(normalized, str)
+                self.assertGreater(len(normalized), 0)  # Should never return empty
+    
+    def test_token_budget_edge_cases(self):
+        """Test token budget with edge cases."""
+        sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
+        from core.token_budget import TokenBudget
+        
+        # Zero budget
+        zero_budget = TokenBudget(0)
+        self.assertFalse(zero_budget.has_budget())
+        self.assertEqual(zero_budget.smart_truncate("test"), "")
+        
+        # Very small budget
+        small_budget = TokenBudget(10)
+        long_text = "This is a very long text" * 100
+        truncated = small_budget.smart_truncate(long_text)
+        self.assertLessEqual(len(truncated), 50)  # Should be much shorter
+        
+        # Extremely large budget
+        large_budget = TokenBudget(1_000_000)
+        self.assertTrue(large_budget.has_budget())
+
 
 if __name__ == "__main__":
     # Run tests

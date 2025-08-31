@@ -9,19 +9,8 @@ Parses RSpec JSON output into TOPA format.
 import json
 from typing import Any
 
-try:
-    from ..core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
-    from .base import BaseParser
-except ImportError:
-    # Fallback for direct execution
-    import sys
-    from pathlib import Path
-
-    sys.path.insert(0, str(Path(__file__).parent))
-    from base import BaseParser
-
-    sys.path.insert(0, str(Path(__file__).parent.parent))
-    from core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
+from ..core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
+from .base import BaseParser
 
 
 class RSpecParser(BaseParser):
@@ -68,7 +57,7 @@ class RSpecParser(BaseParser):
 
         # Parse individual examples (tests)
         examples = data.get("examples", [])
-        file_tests = {}  # Group by file
+        file_tests: dict[str, list[ParsedTestResult]] = {}  # Group by file
 
         for example in examples:
             test_result = self._parse_example(example)

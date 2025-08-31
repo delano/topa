@@ -7,39 +7,19 @@ Converts parsed test data into standardized TOPA format with token optimization.
 from pathlib import Path
 from typing import Any, Optional
 
-try:
-    from .schema import (
-        FileCounts,
-        FileIssues,
-        FileSummary,
-        ParsedTestData,
-        ParsedTestResult,
-        Summary,
-        TestCounts,
-        TestResult,
-        TestType,
-        TOPAOutput,
-    )
-    from .token_budget import TokenBudget
-except ImportError:
-    # Fallback for direct execution
-    import sys
-    from pathlib import Path
-
-    sys.path.insert(0, str(Path(__file__).parent))
-    from schema import (
-        FileCounts,
-        FileIssues,
-        FileSummary,
-        ParsedTestData,
-        ParsedTestResult,
-        Summary,
-        TestCounts,
-        TestResult,
-        TestType,
-        TOPAOutput,
-    )
-    from token_budget import TokenBudget
+from .schema import (
+    FileCounts,
+    FileIssues,
+    FileSummary,
+    ParsedTestData,
+    ParsedTestResult,
+    Summary,
+    TestCounts,
+    TestResult,
+    TestType,
+    TOPAOutput,
+)
+from .token_budget import TokenBudget
 
 
 class FocusMode:

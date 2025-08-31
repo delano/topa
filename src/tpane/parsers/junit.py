@@ -14,7 +14,7 @@ try:
     import defusedxml.ElementTree as ET
 except ImportError:
     # Fall back to standard library
-    import xml.etree.ElementTree as ET
+    import xml.etree.ElementTree as ET  # type: ignore[no-redef]
 
 # For type hints, always use the standard library types
 if TYPE_CHECKING:
@@ -31,19 +31,8 @@ else:
 
         Element = _stdlib_ET.Element
 
-try:
-    from ..core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
-    from .base import BaseParser
-except ImportError:
-    # Fallback for direct execution
-    import sys
-    from pathlib import Path
-
-    sys.path.insert(0, str(Path(__file__).parent))
-    from base import BaseParser
-
-    sys.path.insert(0, str(Path(__file__).parent.parent))
-    from core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
+from ..core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
+from .base import BaseParser
 
 
 class JUnitParser(BaseParser):

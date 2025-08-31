@@ -8,25 +8,14 @@ Parses TAP format test output into TOPA format.
 
 import re
 
-try:
-    from ..core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
-    from .base import BaseParser
-except ImportError:
-    # Fallback for direct execution
-    import sys
-    from pathlib import Path
-
-    sys.path.insert(0, str(Path(__file__).parent))
-    from base import BaseParser
-
-    sys.path.insert(0, str(Path(__file__).parent.parent))
-    from core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
+from ..core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
+from .base import BaseParser
 
 
 class TAPParser(BaseParser):
     """Parser for TAP (Test Anything Protocol) format."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         # TAP format patterns
@@ -43,10 +32,10 @@ class TAPParser(BaseParser):
         """Parse TAP format content."""
         lines = content.split("\n")
 
-        test_results = []
+        test_results: list[ParsedTestResult] = []
         planned_tests = 0
         current_file = "tap_output"
-        pending_diagnostics = []
+        pending_diagnostics: list[str] = []
 
         for line_num, line in enumerate(lines):
             line = line.strip()

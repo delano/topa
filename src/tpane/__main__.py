@@ -34,14 +34,13 @@ import json
 import sys
 from enum import Enum
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 import yaml
 
 # Import core modules
 from .core.encoder import TOPAEncoder
 from .core.encoder_v3 import TOPAV3Encoder
-from .core.schema import FocusMode as V3FocusMode
 from .core.token_budget import TokenBudget
 from .parsers.base import BaseParser
 from .parsers.junit import JUnitParser
@@ -267,8 +266,9 @@ Examples:
         # Create encoder with specified parameters
         focus_mode = FocusMode(args.mode)
         token_budget = TokenBudget(args.limit)
-        
+
         # Choose encoder version
+        encoder: Union[TOPAV3Encoder, TOPAEncoder]
         if args.topa_version == "v0.3":
             # Get command from args for v0.3 context
             command = " ".join(sys.argv)

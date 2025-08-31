@@ -65,7 +65,7 @@ pytest -k "test_pattern"
 # Basic usage (TOPA v0.3 default)
 python src/tpane.py test_output.txt
 
-# With specific format and mode  
+# With specific format and mode
 python src/tpane.py --format junit --mode failures test-results.xml
 
 # From stdin
@@ -150,7 +150,7 @@ src/tpane/
 The tool implements TOPA v0.3 specification with tryouts-inspired design:
 - **Token efficiency**: 66% reduction (375 → 125 tokens) with compact format
 - **Execution context**: Environment details for debugging (command, runtime, VCS, etc.)
-- **Focus modes**: summary, critical, failures, first-failure, all  
+- **Focus modes**: summary, critical, failures, first-failure, all
 - **Cross-language normalization**: Consistent fields across Python, Ruby, JavaScript, Java
 - **Smart defaults**: Only shows non-standard configurations
 - **Progressive disclosure**: Scales from 50 tokens (summary) to 500+ (comprehensive)

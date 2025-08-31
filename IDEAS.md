@@ -11,8 +11,8 @@ This document tracks ongoing dialogue about TOPA evolution, structured for DRY i
 
 ## Idea: REST-Inspired Hypermedia Actions
 
-**Date**: 2025-01-31  
-**Status**: Under Evaluation  
+**Date**: 2025-01-31
+**Status**: Under Evaluation
 **Complexity**: Medium
 
 ### Concept
@@ -40,7 +40,7 @@ tests/user_auth.py:
 
 ### Implementation Approach
 1. Detect original test framework from execution context
-2. Map failures to framework-specific rerun commands  
+2. Map failures to framework-specific rerun commands
 3. Generate actions based on failure type and available tooling
 4. Include in v0.3 output with token budget awareness
 
@@ -62,8 +62,8 @@ tests/user_auth.py:
 
 ### Idea: [Title]
 
-**Date**: YYYY-MM-DD  
-**Status**: [Under Evaluation|Accepted|Rejected|Implemented]  
+**Date**: YYYY-MM-DD
+**Status**: [Under Evaluation|Accepted|Rejected|Implemented]
 **Complexity**: [Low|Medium|High]
 
 #### Concept
@@ -102,7 +102,7 @@ Track evaluation progress and decisions.
 
 **Reject if**:
 - Adds significant token overhead
-- Framework-specific only  
+- Framework-specific only
 - Complex implementation for marginal benefit
 - Conflicts with existing v0.3 principles
 

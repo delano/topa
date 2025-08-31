@@ -127,22 +127,20 @@ token_metadata:
   focus_mode: "failures"
 ```
 
-## Installation & Development
+## Installation
 
 ```bash
-# Clone the repository
+# Install from PyPI (coming soon)
+pip install tpane
+
+# Or install from source
 git clone https://github.com/delano/tpane.git
 cd tpane
-
-# Install dependencies
-pip install pyyaml
-
-# Run tests
-python -m pytest tests/ -v
-
-# Run the tool directly
-python src/tpane.py --help
+pip install .
 ```
+
+For development setup, see [DEVELOPMENT.md](DEVELOPMENT.md).
+For deployment and release information, see [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Supported Test Formats
 

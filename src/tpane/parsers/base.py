@@ -8,7 +8,7 @@ Abstract base class for all input format parsers.
 
 import re
 from abc import ABC, abstractmethod
-from typing import Optional, Tuple
+from typing import Any, Optional, Tuple
 
 try:
     from ..core.schema import ParsedTestData
@@ -18,13 +18,13 @@ except ImportError:
     from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).parent.parent))
-    from core.schema import ParsedTestData
+    from ..core.schema import ParsedTestData
 
 
 class BaseParser(ABC):
     """Abstract base class for test output parsers."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.line_number_pattern = re.compile(r"(?:line|:)?\s*(\d+)", re.IGNORECASE)
 
     @abstractmethod
@@ -158,7 +158,7 @@ class BaseParser(ABC):
 
         return None, None
 
-    def _build_test_data(self, **kwargs) -> ParsedTestData:
+    def _build_test_data(self, **kwargs: Any) -> ParsedTestData:
         """Helper to build ParsedTestData with calculated totals."""
         data = ParsedTestData(**kwargs)
 

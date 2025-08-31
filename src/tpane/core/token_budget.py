@@ -20,7 +20,7 @@ class TokenBudget:
     CHARS_PER_TOKEN = 4  # Conservative estimate
     YAML_OVERHEAD = 50  # Base YAML structure overhead
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Reserve tokens for base structure."""
         self.consumed = self.YAML_OVERHEAD
 

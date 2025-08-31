@@ -6,7 +6,7 @@ Data structures representing the standardized TOPA format.
 
 from dataclasses import asdict, dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Sequence, Collection
 
 
 class TestStatus(Enum):
@@ -98,7 +98,7 @@ class FileSummary:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary format."""
-        result = {
+        result: Dict[str, Any] = {
             "file": self.file,
             "tests": [test.to_dict() for test in self.tests],
         }
@@ -154,7 +154,7 @@ class TOPAOutput:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary format for serialization."""
-        result = {"version": self.version, "summary": self.summary.to_dict()}
+        result: Dict[str, Any] = {"version": self.version, "summary": self.summary.to_dict()}
 
         if self.failures is not None:
             result["failures"] = [f.to_dict() for f in self.failures]

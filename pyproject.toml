@@ -11,14 +11,13 @@ authors = [
 description = "Reference implementation of the TOPA (Test Output Protocol for AI) standard"
 readme = "README.md"
 license = {file = "LICENSE"}
-requires-python = ">=3.7"
+requires-python = ">=3.9"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -92,7 +91,7 @@ exclude_lines = [
 
 [tool.ruff]
 line-length = 88
-target-version = "py37"
+target-version = "py39"
 
 [tool.ruff.lint]
 select = [
@@ -115,7 +114,7 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 [tool.mypy]
-python_version = "3.7"
+python_version = "3.9"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true

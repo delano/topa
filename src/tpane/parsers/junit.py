@@ -7,14 +7,14 @@ Parses JUnit XML test results into TOPA format.
 """
 
 import re
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
 try:
     # Use defusedxml for security if available
     import defusedxml.ElementTree as ET
 except ImportError:
     # Fall back to standard library
-    import xml.etree.ElementTree as ET
+    import xml.etree.ElementTree as ET  # type: ignore[no-redef]
 
 # For type hints, always use the standard library types
 if TYPE_CHECKING:
@@ -31,19 +31,8 @@ else:
 
         Element = _stdlib_ET.Element
 
-try:
-    from ..core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
-    from .base import BaseParser
-except ImportError:
-    # Fallback for direct execution
-    import sys
-    from pathlib import Path
-
-    sys.path.insert(0, str(Path(__file__).parent))
-    from base import BaseParser
-
-    sys.path.insert(0, str(Path(__file__).parent.parent))
-    from core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
+from ..core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
+from .base import BaseParser
 
 
 class JUnitParser(BaseParser):
@@ -79,9 +68,7 @@ class JUnitParser(BaseParser):
                 )
             else:
                 # Fall back for any other XML processing issues
-                return self._parse_as_text(
-                    content, f"XML Processing Error: {e}"
-                )
+                return self._parse_as_text(content, f"XML Processing Error: {e}")
 
     def _clean_xml(self, content: str) -> str:
         """Clean up common XML formatting issues."""
@@ -110,7 +97,7 @@ class JUnitParser(BaseParser):
 
         return content.strip()
 
-    def _parse_testsuites(self, testsuites: List[Element]) -> ParsedTestData:
+    def _parse_testsuites(self, testsuites: list[Element]) -> ParsedTestData:
         """Parse multiple test suites."""
         file_results = []
         total_tests = 0
@@ -141,9 +128,7 @@ class JUnitParser(BaseParser):
                 test_results.append(test_result)
 
             # Create file result (use suite name as file path)
-            file_path = self._extract_file_path_from_suite(
-                testsuite, suite_name
-            )
+            file_path = self._extract_file_path_from_suite(testsuite, suite_name)
             file_results.append(
                 ParsedFileResult(file_path=file_path, test_results=test_results)
             )
@@ -153,9 +138,7 @@ class JUnitParser(BaseParser):
 
         # Format time
         elapsed_time = (
-            self._parse_time_string(f"{total_time}s")
-            if total_time > 0
-            else None
+            self._parse_time_string(f"{total_time}s") if total_time > 0 else None
         )
 
         return ParsedTestData(
@@ -171,12 +154,9 @@ class JUnitParser(BaseParser):
     def _parse_testcase(self, testcase: Element) -> ParsedTestResult:
         """Parse individual test case."""
         name = testcase.get("name", "unnamed test")
-        classname = testcase.get("classname", "")
 
-        # Normalize test name
+        # Normalize test name - just use the base name without classname prefix
         test_name = self._normalize_test_name(name)
-        if classname and classname not in test_name:
-            test_name = f"{classname}: {test_name}"
 
         # Extract line number if present
         line = None
@@ -227,9 +207,7 @@ class JUnitParser(BaseParser):
             # Passed test
             return ParsedTestResult(name=test_name, line=line, passed=True)
 
-    def _extract_file_path_from_suite(
-        self, testsuite: Element, suite_name: str
-    ) -> str:
+    def _extract_file_path_from_suite(self, testsuite: Element, suite_name: str) -> str:
         """Extract file path from testsuite element."""
         # Look for file-related attributes
         file_attrs = ["file", "filename", "source"]
@@ -253,9 +231,7 @@ class JUnitParser(BaseParser):
         # Fall back to suite name with common extension
         return suite_name + ".java"
 
-    def _parse_as_text(
-        self, content: str, error_context: str
-    ) -> ParsedTestData:
+    def _parse_as_text(self, content: str, error_context: str) -> ParsedTestData:
         """Fallback text-based parsing for malformed XML."""
         lines = content.split("\n")
 
@@ -277,22 +253,15 @@ class JUnitParser(BaseParser):
                 test_name = line
 
                 # Determine if it's a failure/error
-                passed = (
-                    "failure" not in line.lower()
-                    and "error" not in line.lower()
-                )
+                passed = "failure" not in line.lower() and "error" not in line.lower()
                 is_error = "error" in line.lower()
 
                 test_result = ParsedTestResult(
                     name=self._normalize_test_name(test_name),
                     passed=passed,
                     error_message=line if is_error else None,
-                    expected="parse error"
-                    if not passed and not is_error
-                    else None,
-                    actual=error_context
-                    if not passed and not is_error
-                    else None,
+                    expected="parse error" if not passed and not is_error else None,
+                    actual=error_context if not passed and not is_error else None,
                 )
                 test_results.append(test_result)
 

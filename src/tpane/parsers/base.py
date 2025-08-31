@@ -8,7 +8,7 @@ Abstract base class for all input format parsers.
 
 import re
 from abc import ABC, abstractmethod
-from typing import Optional, Tuple
+from typing import Any, Optional
 
 try:
     from ..core.schema import ParsedTestData
@@ -18,16 +18,14 @@ except ImportError:
     from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).parent.parent))
-    from core.schema import ParsedTestData
+    from ..core.schema import ParsedTestData
 
 
 class BaseParser(ABC):
     """Abstract base class for test output parsers."""
 
-    def __init__(self):
-        self.line_number_pattern = re.compile(
-            r"(?:line|:)?\s*(\d+)", re.IGNORECASE
-        )
+    def __init__(self) -> None:
+        self.line_number_pattern = re.compile(r"(?:line|:)?\s*(\d+)", re.IGNORECASE)
 
     @abstractmethod
     def parse(self, content: str) -> ParsedTestData:
@@ -87,7 +85,7 @@ class BaseParser(ABC):
                     if value < 1:
                         return f"{int(value * 1000)}ms"
                     else:
-                        return f"{value:.1f}s"
+                        return f"{value:g}s"
                 elif unit == "ms":
                     if value < 1:
                         return f"{int(value * 1000)}μs"
@@ -133,7 +131,7 @@ class BaseParser(ABC):
 
     def _extract_assertion_values(
         self, text: str
-    ) -> Tuple[Optional[str], Optional[str]]:
+    ) -> tuple[Optional[str], Optional[str]]:
         """Extract expected and actual values from assertion failure text."""
         patterns = [
             # RSpec style: expected: X, got: Y
@@ -160,28 +158,22 @@ class BaseParser(ABC):
 
         return None, None
 
-    def _build_test_data(self, **kwargs) -> ParsedTestData:
+    def _build_test_data(self, **kwargs: Any) -> ParsedTestData:
         """Helper to build ParsedTestData with calculated totals."""
         data = ParsedTestData(**kwargs)
 
         # Calculate totals from file results if not provided
         if not data.total_tests and data.file_results:
-            data.total_tests = sum(
-                len(f.test_results) for f in data.file_results
-            )
+            data.total_tests = sum(len(f.test_results) for f in data.file_results)
             data.passed_tests = sum(
-                sum(1 for t in f.test_results if t.passed)
-                for f in data.file_results
+                sum(1 for t in f.test_results if t.passed) for f in data.file_results
             )
             data.failed_tests = sum(
-                sum(
-                    1 for t in f.test_results if not t.passed and not t.is_error
-                )
+                sum(1 for t in f.test_results if not t.passed and not t.is_error)
                 for f in data.file_results
             )
             data.error_tests = sum(
-                sum(1 for t in f.test_results if t.is_error)
-                for f in data.file_results
+                sum(1 for t in f.test_results if t.is_error) for f in data.file_results
             )
             data.total_files = len(data.file_results)
 

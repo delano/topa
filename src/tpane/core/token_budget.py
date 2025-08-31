@@ -20,7 +20,7 @@ class TokenBudget:
     CHARS_PER_TOKEN = 4  # Conservative estimate
     YAML_OVERHEAD = 50  # Base YAML structure overhead
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Reserve tokens for base structure."""
         self.consumed = self.YAML_OVERHEAD
 
@@ -71,9 +71,7 @@ class TokenBudget:
         """Consume tokens regardless of budget (for mandatory content)."""
         return self.consume(text)
 
-    def smart_truncate(
-        self, text: str, max_tokens: Optional[int] = None
-    ) -> str:
+    def smart_truncate(self, text: str, max_tokens: Optional[int] = None) -> str:
         """Truncate text intelligently to fit within token budget."""
         if not text:
             return text
@@ -136,18 +134,13 @@ class TokenBudget:
 
         # Calculate available space
         available_tokens = self.remaining
-        suffix_tokens = (
-            self.estimate_tokens(preserve_suffix) if preserve_suffix else 0
-        )
-        content_tokens = (
-            available_tokens - suffix_tokens - 1
-        )  # Buffer for "..."
+        suffix_tokens = self.estimate_tokens(preserve_suffix) if preserve_suffix else 0
+        content_tokens = available_tokens - suffix_tokens - 1  # Buffer for "..."
 
         if content_tokens <= 0:
             return preserve_suffix or ""
 
         # Truncate main content
-        content_chars = int(content_tokens * self.CHARS_PER_TOKEN * 0.8)
         truncated_content = self.smart_truncate(text, content_tokens)
 
         if preserve_suffix:

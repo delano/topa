@@ -8,33 +8,20 @@ Parses pytest console output into TOPA format.
 
 import re
 from collections import defaultdict
-from typing import List, Optional
+from typing import Optional
 
-try:
-    from ..core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
-    from .base import BaseParser
-except ImportError:
-    # Fallback for direct execution
-    import sys
-    from pathlib import Path
-
-    sys.path.insert(0, str(Path(__file__).parent))
-    from base import BaseParser
-
-    sys.path.insert(0, str(Path(__file__).parent.parent))
-    from core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
+from ..core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
+from .base import BaseParser
 
 
 class PytestParser(BaseParser):
     """Parser for pytest console output."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         # Pytest output patterns
-        self.test_line_pattern = re.compile(
-            r"^([^\s:]+(?:\.py)?):?:?(\w+)?\s+(.*)$"
-        )
+        self.test_line_pattern = re.compile(r"^([^\s:]+(?:\.py)?):?:?(\w+)?\s+(.*)$")
 
         self.failure_pattern = re.compile(
             r"^FAILED\s+([^:\s]+(?:\.py)?):?:?(\w+)?\s*-?\s*(.*)$"
@@ -44,9 +31,7 @@ class PytestParser(BaseParser):
             r"^ERROR\s+([^:\s]+(?:\.py)?):?:?(\w+)?\s*-?\s*(.*)$"
         )
 
-        self.passed_pattern = re.compile(
-            r"^PASSED\s+([^:\s]+(?:\.py)?):?:?(\w+)?"
-        )
+        self.passed_pattern = re.compile(r"^PASSED\s+([^:\s]+(?:\.py)?):?:?(\w+)?")
 
         self.summary_pattern = re.compile(
             r"=+\s*(\d+)\s+failed(?:,\s*(\d+)\s+passed)?(?:,\s*(\d+)\s+error)?.*?in\s+([\d.]+s?)"
@@ -72,9 +57,6 @@ class PytestParser(BaseParser):
         elapsed_time = None
 
         # Parse mode
-        in_failure_details = False
-        current_failure_details = []
-        current_test_info = None
 
         for i, line in enumerate(lines):
             line = line.strip()
@@ -108,9 +90,7 @@ class PytestParser(BaseParser):
                 )
 
                 # Look ahead for assertion details
-                assertion_details = self._extract_assertion_from_context(
-                    lines, i + 1
-                )
+                assertion_details = self._extract_assertion_from_context(lines, i + 1)
                 if assertion_details:
                     test_result.expected, test_result.actual = assertion_details
                 elif failure_reason:
@@ -156,27 +136,20 @@ class PytestParser(BaseParser):
                 file_tests[file_path].append(test_result)
                 continue
 
-            # Look for assertion patterns in failure details
-            if "assert" in line.lower() and not in_failure_details:
-                expected, actual = self._extract_assertion_values(line)
-                if expected and actual:
-                    # This might be useful context for the next test
-                    pass
+            # Skip unmatched lines
 
         # If we couldn't parse summary, calculate from parsed tests
         if total_tests == 0:
             total_tests = sum(len(tests) for tests in file_tests.values())
             passed_count = sum(
-                sum(1 for t in tests if t.passed)
-                for tests in file_tests.values()
+                sum(1 for t in tests if t.passed) for tests in file_tests.values()
             )
             failed_count = sum(
                 sum(1 for t in tests if not t.passed and not t.is_error)
                 for tests in file_tests.values()
             )
             error_count = sum(
-                sum(1 for t in tests if t.is_error)
-                for tests in file_tests.values()
+                sum(1 for t in tests if t.is_error) for tests in file_tests.values()
             )
 
         # Convert to file results
@@ -219,9 +192,7 @@ class PytestParser(BaseParser):
                 )
 
             file_results.append(
-                ParsedFileResult(
-                    file_path="pytest_output", test_results=generic_tests
-                )
+                ParsedFileResult(file_path="pytest_output", test_results=generic_tests)
             )
 
         return ParsedTestData(
@@ -235,8 +206,8 @@ class PytestParser(BaseParser):
         )
 
     def _extract_assertion_from_context(
-        self, lines: List[str], start_index: int
-    ) -> Optional[tuple]:
+        self, lines: list[str], start_index: int
+    ) -> Optional[tuple[str, str]]:
         """Look ahead in lines for assertion details."""
         # Look at next few lines for assertion info
         for i in range(start_index, min(start_index + 10, len(lines))):

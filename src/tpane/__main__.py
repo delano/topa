@@ -38,25 +38,13 @@ from typing import Optional
 import yaml
 
 # Import core modules (to be created)
-try:
-    # from .core.schema import FileSummary, TestResult, TOPAOutput
-    from .core.encoder import TOPAEncoder
-    from .core.token_budget import TokenBudget
-    from .parsers.base import BaseParser
-    from .parsers.junit import JUnitParser
-    from .parsers.pytest import PytestParser
-    from .parsers.rspec import RSpecParser
-    from .parsers.tap import TAPParser
-except ImportError:
-    # Fallback for development/standalone usage
-    sys.path.insert(0, str(Path(__file__).parent))
-    from core.encoder import TOPAEncoder
-    from core.token_budget import TokenBudget
-    from parsers.base import BaseParser
-    from parsers.junit import JUnitParser
-    from parsers.pytest import PytestParser
-    from parsers.rspec import RSpecParser
-    from parsers.tap import TAPParser
+from .core.encoder import TOPAEncoder
+from .core.token_budget import TokenBudget
+from .parsers.base import BaseParser
+from .parsers.junit import JUnitParser
+from .parsers.pytest import PytestParser
+from .parsers.rspec import RSpecParser
+from .parsers.tap import TAPParser
 
 VERSION = "0.1.0"
 
@@ -115,7 +103,7 @@ def detect_format(content: str) -> InputFormat:
 
 def get_parser(format_type: InputFormat) -> BaseParser:
     """Get appropriate parser for input format."""
-    parsers = {
+    parsers: dict[InputFormat, type[BaseParser]] = {
         InputFormat.JUNIT: JUnitParser,
         InputFormat.TAP: TAPParser,
         InputFormat.PYTEST: PytestParser,
@@ -147,7 +135,7 @@ def read_input(input_file: Optional[str], max_size_mb: int = 50) -> str:
                 )
                 sys.exit(1)
 
-            with open(input_file, "r", encoding="utf-8") as f:
+            with open(input_file, encoding="utf-8") as f:
                 content = f.read()
                 if len(content) > MAX_INPUT_SIZE:
                     print(
@@ -160,14 +148,10 @@ def read_input(input_file: Optional[str], max_size_mb: int = 50) -> str:
             print(f"Error: File '{input_file}' not found", file=sys.stderr)
             sys.exit(1)
         except UnicodeDecodeError:
-            print(
-                f"Error: Cannot decode '{input_file}' as UTF-8", file=sys.stderr
-            )
+            print(f"Error: Cannot decode '{input_file}' as UTF-8", file=sys.stderr)
             sys.exit(1)
         except OSError as e:
-            print(
-                f"Error: Cannot read file '{input_file}': {e}", file=sys.stderr
-            )
+            print(f"Error: Cannot read file '{input_file}': {e}", file=sys.stderr)
             sys.exit(1)
     else:
         # Read from stdin with size limit
@@ -185,7 +169,7 @@ def read_input(input_file: Optional[str], max_size_mb: int = 50) -> str:
             sys.exit(1)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="tpane - Reference implementation of TOPA (Test Output Protocol for AI)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -271,7 +255,7 @@ Examples:
         # Create encoder with specified parameters
         focus_mode = FocusMode(args.mode)
         token_budget = TokenBudget(args.limit)
-        encoder = TOPAEncoder(focus_mode, token_budget)
+        encoder = TOPAEncoder(focus_mode.value, token_budget)
 
         # Generate TOPA output
         try:

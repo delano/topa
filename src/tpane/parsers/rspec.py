@@ -7,21 +7,10 @@ Parses RSpec JSON output into TOPA format.
 """
 
 import json
-from typing import Any, Dict
+from typing import Any
 
-try:
-    from ..core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
-    from .base import BaseParser
-except ImportError:
-    # Fallback for direct execution
-    import sys
-    from pathlib import Path
-
-    sys.path.insert(0, str(Path(__file__).parent))
-    from base import BaseParser
-
-    sys.path.insert(0, str(Path(__file__).parent.parent))
-    from core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
+from ..core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
+from .base import BaseParser
 
 
 class RSpecParser(BaseParser):
@@ -45,14 +34,16 @@ class RSpecParser(BaseParser):
             # Fall back to text parsing
             return self._parse_as_text(content, f"JSON Parse Error: {e}")
 
-    def _parse_rspec_json(self, data: Dict[str, Any]) -> ParsedTestData:
+    def _parse_rspec_json(self, data: dict[str, Any]) -> ParsedTestData:
         """Parse RSpec JSON structure."""
         # Extract summary information
         summary = data.get("summary", {})
         total_tests = summary.get("example_count", 0)
         failed_count = summary.get("failure_count", 0)
         error_count = summary.get("error_count", 0)  # RSpec might have errors
-        pending_count = summary.get("pending_count", 0)
+        _pending_count = summary.get(
+            "pending_count", 0
+        )  # Extracted but not used - pending tests count as passed
         duration = summary.get("duration")
 
         # Passed tests = total - failed - errors - pending
@@ -66,7 +57,7 @@ class RSpecParser(BaseParser):
 
         # Parse individual examples (tests)
         examples = data.get("examples", [])
-        file_tests = {}  # Group by file
+        file_tests: dict[str, list[ParsedTestResult]] = {}  # Group by file
 
         for example in examples:
             test_result = self._parse_example(example)
@@ -96,7 +87,7 @@ class RSpecParser(BaseParser):
             file_results=file_results,
         )
 
-    def _parse_example(self, example: Dict[str, Any]) -> ParsedTestResult:
+    def _parse_example(self, example: dict[str, Any]) -> ParsedTestResult:
         """Parse individual RSpec example."""
         # Basic info
         description = example.get("description", "unnamed example")
@@ -109,9 +100,7 @@ class RSpecParser(BaseParser):
 
         # Create test result
         test_result = ParsedTestResult(
-            name=self._normalize_rspec_description(
-                full_description or description
-            ),
+            name=self._normalize_rspec_description(full_description or description),
             line=line_number,
             passed=passed,
         )
@@ -133,9 +122,7 @@ class RSpecParser(BaseParser):
                 else:
                     # This is an assertion failure
                     # Try to extract expected/actual from message
-                    expected, actual = self._extract_assertion_values(
-                        exception_message
-                    )
+                    expected, actual = self._extract_assertion_values(exception_message)
 
                     if expected and actual:
                         test_result.expected = expected
@@ -144,9 +131,7 @@ class RSpecParser(BaseParser):
                         # Use full exception info
                         test_result.expected = "assertion to pass"
                         test_result.actual = (
-                            f"{exception_class}: {exception_message}".strip(
-                                ": "
-                            )
+                            f"{exception_class}: {exception_message}".strip(": ")
                         )
 
         return test_result
@@ -184,9 +169,7 @@ class RSpecParser(BaseParser):
 
         return file_path
 
-    def _parse_as_text(
-        self, content: str, error_context: str
-    ) -> ParsedTestData:
+    def _parse_as_text(self, content: str, error_context: str) -> ParsedTestData:
         """Fallback text parsing for malformed JSON."""
         lines = content.split("\n")
 
@@ -206,22 +189,15 @@ class RSpecParser(BaseParser):
                 test_name = line
 
                 # Determine status
-                passed = (
-                    "failure" not in line.lower()
-                    and "error" not in line.lower()
-                )
+                passed = "failure" not in line.lower() and "error" not in line.lower()
                 is_error = "error" in line.lower()
 
                 test_result = ParsedTestResult(
                     name=self._normalize_test_name(test_name),
                     passed=passed,
                     error_message=line if is_error else None,
-                    expected="valid JSON"
-                    if not passed and not is_error
-                    else None,
-                    actual=error_context
-                    if not passed and not is_error
-                    else None,
+                    expected="valid JSON" if not passed and not is_error else None,
+                    actual=error_context if not passed and not is_error else None,
                 )
                 test_results.append(test_result)
 

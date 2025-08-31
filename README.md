@@ -22,7 +22,7 @@ Just like T-Pain's auto-tune transforms raw vocals into polished audio, `tpane` 
 ## Quick Start
 
 ```bash
-# Install dependencies (requires Python 3.7+)
+# Install dependencies (requires Python 3.9+)
 pip install pyyaml
 
 # Convert JUnit XML to TOPA format
@@ -107,7 +107,7 @@ summary:
   failed_tests: 12
   error_tests: 2
   execution_time: "23.45s"
-  
+
 file_results:
   - file_path: "spec/user_validation_spec.rb"
     test_count: 8
@@ -119,7 +119,7 @@ file_results:
         actual: "invalid@"
         error_message: "Email format validation failed"
         location: "spec/user_validation_spec.rb:42"
-        
+
 token_metadata:
   estimated_tokens: 1847
   budget_limit: 2000
@@ -127,22 +127,20 @@ token_metadata:
   focus_mode: "failures"
 ```
 
-## Installation & Development
+## Installation
 
 ```bash
-# Clone the repository
+# Install from PyPI (coming soon)
+pip install tpane
+
+# Or install from source
 git clone https://github.com/delano/tpane.git
 cd tpane
-
-# Install dependencies
-pip install pyyaml
-
-# Run tests
-python -m pytest tests/ -v
-
-# Run the tool directly
-python src/tpane.py --help
+pip install .
 ```
+
+For development setup, see [DEVELOPMENT.md](DEVELOPMENT.md).
+For deployment and release information, see [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Supported Test Formats
 
@@ -161,7 +159,7 @@ python src/tpane.py --help
   run: |
     pytest --junitxml=results.xml
     python src/tpane.py --format junit results.xml > topa_output.yaml
-    
+
 - name: Analyze failures with AI
   uses: your-ai-analysis-action@v1
   with:

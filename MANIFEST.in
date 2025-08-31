@@ -1,0 +1,23 @@
+# Include top-level documentation and configuration files
+include *.md
+include *.yaml
+include .pre-commit-config.yaml
+
+# Include documentation directory
+recursive-include docs *.md
+
+# Include examples directory with all sample files
+recursive-include examples *.json
+recursive-include examples *.sh
+recursive-include examples *.txt
+recursive-include examples *.xml
+recursive-include examples *.yaml
+
+# Include specification directory
+recursive-include spec *.md
+
+# Include tests directory
+recursive-include tests *.py
+
+# Include license and other important files
+include LICENSE

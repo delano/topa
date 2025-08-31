@@ -38,25 +38,13 @@ from typing import Optional
 import yaml
 
 # Import core modules (to be created)
-try:
-    # from .core.schema import FileSummary, TestResult, TOPAOutput
-    from .core.encoder import TOPAEncoder
-    from .core.token_budget import TokenBudget
-    from .parsers.base import BaseParser
-    from .parsers.junit import JUnitParser
-    from .parsers.pytest import PytestParser
-    from .parsers.rspec import RSpecParser
-    from .parsers.tap import TAPParser
-except ImportError:
-    # Fallback for development/standalone usage
-    sys.path.insert(0, str(Path(__file__).parent))
-    from core.encoder import TOPAEncoder
-    from core.token_budget import TokenBudget
-    from parsers.base import BaseParser
-    from parsers.junit import JUnitParser
-    from parsers.pytest import PytestParser
-    from parsers.rspec import RSpecParser
-    from parsers.tap import TAPParser
+from .core.encoder import TOPAEncoder
+from .core.token_budget import TokenBudget
+from .parsers.base import BaseParser
+from .parsers.junit import JUnitParser
+from .parsers.pytest import PytestParser
+from .parsers.rspec import RSpecParser
+from .parsers.tap import TAPParser
 
 VERSION = "0.1.0"
 
@@ -115,7 +103,7 @@ def detect_format(content: str) -> InputFormat:
 
 def get_parser(format_type: InputFormat) -> BaseParser:
     """Get appropriate parser for input format."""
-    parsers = {
+    parsers: dict[InputFormat, type[BaseParser]] = {
         InputFormat.JUNIT: JUnitParser,
         InputFormat.TAP: TAPParser,
         InputFormat.PYTEST: PytestParser,
@@ -181,7 +169,7 @@ def read_input(input_file: Optional[str], max_size_mb: int = 50) -> str:
             sys.exit(1)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="tpane - Reference implementation of TOPA (Test Output Protocol for AI)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -267,7 +255,7 @@ Examples:
         # Create encoder with specified parameters
         focus_mode = FocusMode(args.mode)
         token_budget = TokenBudget(args.limit)
-        encoder = TOPAEncoder(focus_mode, token_budget)
+        encoder = TOPAEncoder(focus_mode.value, token_budget)
 
         # Generate TOPA output
         try:

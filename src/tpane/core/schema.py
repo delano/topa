@@ -6,7 +6,7 @@ Data structures representing the standardized TOPA format.
 
 from dataclasses import asdict, dataclass, field
 from enum import Enum
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 
 class TestStatus(Enum):
@@ -22,6 +22,89 @@ class TestType(Enum):
 
     FAILURE = "failure"
     ERROR = "error"
+
+
+class FocusMode(Enum):
+    """TOPA v0.3 focus modes for progressive disclosure."""
+
+    SUMMARY = "summary"
+    CRITICAL = "critical"
+    FAILURES = "failures"
+    FIRST_FAILURE = "first-failure"
+    ALL = "all"
+
+
+class ProjectType(Enum):
+    """Auto-detected project types."""
+
+    RAILS = "rails"
+    DJANGO = "django"
+    NODE_PACKAGE = "node_package"
+    PYTHON_PACKAGE = "python_package"
+    JAVA_MAVEN = "java_maven"
+    JAVA_GRADLE = "java_gradle"
+    DOTNET = "dotnet"
+    GO_MODULE = "go_module"
+    RUST_CRATE = "rust_crate"
+    GENERIC = "generic"
+
+
+# Cross-language field normalization mappings from TOPA v0.3 spec
+ENVIRONMENT_MAPPINGS: Dict[str, list[str]] = {
+    "CI": ["CI", "GITHUB_ACTIONS", "GITLAB_CI", "JENKINS_URL", "TRAVIS", "CIRCLECI"],
+    "ENV": ["RAILS_ENV", "NODE_ENV", "APP_ENV", "DJANGO_SETTINGS_MODULE", "FLASK_ENV"],
+    "COV": ["COVERAGE", "SIMPLECOV", "PYTEST_COV", "NYC_CONFIG"],
+    "SEED": ["SEED", "RANDOM_SEED", "TEST_SEED"],
+}
+
+FLAG_MAPPINGS: Dict[str, list[str]] = {
+    "verbose": ["-v", "--verbose", "-verbose"],
+    "debug": ["-d", "--debug", "-debug", "DEBUG=1"],
+    "parallel": ["-j", "--parallel", "-n", "-parallel"],
+    "fails-only": ["-f", "--failed-only", "--failed", "-fails"],
+    "strict": ["--strict", "-W error", "-strict"],
+    "quiet": ["-q", "--quiet", "-quiet"],
+    "traces": ["-s", "--tb=long", "--traceback", "-traces"],
+}
+
+PROJECT_DETECTION_PATTERNS: Dict[ProjectType, list[str]] = {
+    ProjectType.RAILS: ["config/application.rb", "Gemfile", "config/routes.rb"],
+    ProjectType.DJANGO: ["manage.py", "settings.py", "wsgi.py"],
+    ProjectType.NODE_PACKAGE: ["package.json", "node_modules"],
+    ProjectType.PYTHON_PACKAGE: ["setup.py", "pyproject.toml", "requirements.txt"],
+    ProjectType.JAVA_MAVEN: ["pom.xml"],
+    ProjectType.JAVA_GRADLE: ["build.gradle", "build.gradle.kts"],
+    ProjectType.DOTNET: ["*.csproj", "*.sln", "*.fsproj"],
+    ProjectType.GO_MODULE: ["go.mod", "go.sum"],
+    ProjectType.RUST_CRATE: ["Cargo.toml", "Cargo.lock"],
+}
+
+
+def normalize_environment_variables(env_dict: Dict[str, str]) -> Dict[str, str]:
+    """Normalize environment variables to TOPA standard keys."""
+    normalized = {}
+    
+    for topa_key, possible_keys in ENVIRONMENT_MAPPINGS.items():
+        for env_key in possible_keys:
+            if env_key in env_dict:
+                # Use the first match found
+                normalized[topa_key] = env_dict[env_key]
+                break
+                
+    return normalized
+
+
+def normalize_flags(flags: list[str]) -> list[str]:
+    """Normalize command-line flags to TOPA standard terms."""
+    normalized = set()
+    
+    for flag in flags:
+        for topa_flag, possible_flags in FLAG_MAPPINGS.items():
+            if flag in possible_flags:
+                normalized.add(topa_flag)
+                break
+                
+    return sorted(list(normalized))
 
 
 @dataclass
@@ -144,6 +227,87 @@ class FileIssues:
 
 
 @dataclass
+class ExecutionContext:
+    """TOPA v0.3 execution context with compact field formats."""
+
+    command: str
+    pid: int
+    pwd: str
+    runtime: str  # "language version (platform)"
+    test_framework: str  # "name (isolation_mode)"
+    files_under_test: int
+    protocol: str  # "TOPA v0.3 | focus: mode | limit: tokens"
+    package_manager: Optional[str] = None  # "name version"
+    vcs: Optional[str] = None  # "system branch@commit"
+    environment: Optional[Dict[str, str]] = None  # Non-default env vars only
+    flags: Optional[list[str]] = None  # Normalized execution flags
+    project_type: Optional[ProjectType] = None
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert to v0.3 compact format."""
+        result: dict[str, Any] = {
+            "command": self.command,
+            f"pid": f"{self.pid} | pwd: {self.pwd}",
+            "runtime": self.runtime,
+            "test_framework": self.test_framework,
+            "protocol": self.protocol,
+            "files_under_test": self.files_under_test,
+        }
+
+        if self.package_manager:
+            result["package_manager"] = self.package_manager
+        
+        if self.vcs:
+            result["vcs"] = self.vcs
+            
+        if self.environment:
+            env_pairs = [f"{k}={v}" for k, v in self.environment.items()]
+            result["environment"] = ", ".join(env_pairs)
+            
+        if self.flags:
+            result["flags"] = ", ".join(self.flags)
+            
+        if self.project_type:
+            result["project_type"] = self.project_type.value
+
+        return result
+
+
+@dataclass
+class V3FailureResult:
+    """TOPA v0.3 compact failure result."""
+    
+    line: int
+    description: str
+    test_name: str
+    expected: Optional[str] = None
+    actual: Optional[str] = None
+    diff_removed: Optional[str] = None
+    diff_added: Optional[str] = None
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert to v0.3 format."""
+        result: dict[str, Any] = {
+            f"L{self.line}": self.description,
+            "Test": self.test_name,
+        }
+        
+        if self.expected is not None:
+            result["Expected"] = self.expected
+        if self.actual is not None:
+            result["Got"] = self.actual
+        if self.diff_removed or self.diff_added:
+            diff_lines = []
+            if self.diff_removed:
+                diff_lines.append(f"- {self.diff_removed}")
+            if self.diff_added:
+                diff_lines.append(f"+ {self.diff_added}")
+            result["Diff"] = diff_lines
+            
+        return result
+
+
+@dataclass
 class TOPAOutput:
     """Complete TOPA format output."""
 
@@ -165,6 +329,39 @@ class TOPAOutput:
         if self.files_with_issues is not None:
             result["files_with_issues"] = [f.to_dict() for f in self.files_with_issues]
 
+        return result
+
+
+@dataclass
+class TOPAV3Output:
+    """TOPA v0.3 format output with execution context."""
+
+    execution_context: ExecutionContext
+    focus_mode: FocusMode
+    # For summary mode
+    summary_line: Optional[str] = None  # "X passed, Y failed in Z files"
+    file_issues: Optional[Dict[str, str]] = None  # {"file.py": "2 failed"}
+    
+    # For failures/critical modes  
+    failures: Optional[Dict[str, list[V3FailureResult]]] = None  # {"file.py": [failures]}
+    
+    def to_dict(self) -> dict[str, Any]:
+        """Convert to v0.3 format for serialization."""
+        result: dict[str, Any] = {
+            "EXECUTION_CONTEXT": self.execution_context.to_dict()
+        }
+        
+        if self.focus_mode == FocusMode.SUMMARY:
+            if self.summary_line:
+                result["Summary"] = self.summary_line
+            if self.file_issues:
+                result["Files"] = self.file_issues
+        else:
+            # failures, critical, first-failure, all modes
+            if self.failures:
+                for file_path, file_failures in self.failures.items():
+                    result[file_path] = [f.to_dict() for f in file_failures]
+                    
         return result
 
 

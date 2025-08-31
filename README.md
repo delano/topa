@@ -14,7 +14,7 @@ Just like T-Pain's auto-tune transforms raw vocals into polished audio, `tpane` 
 
 ## Key Benefits
 
-- **60-80% token reduction** compared to raw test output
+- **60-80% token reduction** with TOPA v0.3 format (66% improvement over v0.2)
 - **Structured, predictable format** for reliable AI parsing
 - **Language-agnostic design** for cross-framework adoption
 - **Progressive disclosure** based on context and budget constraints
@@ -70,9 +70,15 @@ tpane --mode first-failure test_output.txt
 
 ### Token Management
 ```bash
-# Set custom token budget (default: 2000)
+# Set custom token budget (default: 5000)
 tpane --limit 1000 large_test_output.xml
-tpane --limit 5000 comprehensive_results.json
+tpane --limit 10000 comprehensive_results.json
+
+# Use TOPA v0.3 format (default)
+tpane --topa-version v0.3 test_output.txt
+
+# Use legacy v0.2 format
+tpane --topa-version v0.2 test_output.txt
 
 # Handle large files (default max: 50MB)
 tpane --max-input-size 100 very_large_results.xml
@@ -91,15 +97,34 @@ TOPA (Test Output Protocol for AI) is a standardized test output format designed
 
 ## TOPA Output Format
 
-The `tpane` tool outputs YAML-formatted TOPA data that includes:
+The `tpane` tool outputs YAML-formatted TOPA data. **TOPA v0.3** (default) includes:
 
-- **Test Summary**: Total, passed, failed, error counts and execution time
-- **File Results**: Organized by test file with path normalization
-- **Test Details**: Individual test results with failure context
-- **Token Metadata**: Budget usage and truncation indicators
-- **Semantic Enhancement**: Extracted assertions, expected/actual values
+- **Execution Context**: Environment details for debugging (command, runtime, VCS info)
+- **Compact Format**: Single-line structures for maximum token efficiency
+- **Focus Modes**: Progressive disclosure from summary (50 tokens) to comprehensive
+- **Cross-Language Normalization**: Consistent field names across test frameworks
+- **Smart Defaults**: Only shows non-standard configurations
 
-### Example Output
+### Example Output (TOPA v0.3 - Default)
+```yaml
+EXECUTION_CONTEXT:
+  command: python src/tpane.py --format pytest tests/
+  pid: 12345 | pwd: /home/user/project
+  runtime: python 3.11.5 (linux-x64)
+  package_manager: pip 23.0.1
+  vcs: git main@a1b2c3d
+  test_framework: tpane (isolated)
+  protocol: TOPA v0.3 | focus: failures | limit: 5000
+  files_under_test: 24
+
+tests/user_validation.py:
+  L42: test failed
+    Test: validates email format
+    Expected: valid email
+    Got: invalid@
+```
+
+### Legacy Output (TOPA v0.2)
 ```yaml
 summary:
   total_tests: 156
@@ -117,14 +142,6 @@ file_results:
         passed: false
         expected: "valid email"
         actual: "invalid@"
-        error_message: "Email format validation failed"
-        location: "spec/user_validation_spec.rb:42"
-
-token_metadata:
-  estimated_tokens: 1847
-  budget_limit: 2000
-  truncated: false
-  focus_mode: "failures"
 ```
 
 ## Installation

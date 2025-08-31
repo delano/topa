@@ -12,8 +12,9 @@ Usage:
 
 Options:
   --format FORMAT    Input format: junit, tap, pytest, rspec, auto [default: auto]
-  --mode MODE        Focus mode: summary, critical, failures, first-failure [default: failures]
-  --limit TOKENS     Token budget limit [default: 2000]
+  --mode MODE        Focus mode: summary, critical, failures, first-failure, all [default: failures]
+  --limit TOKENS     Token budget limit [default: 5000]
+  --topa-version VER TOPA version: v0.2, v0.3 [default: v0.3]
   --version          Show version information
   --help             Show this help message
 
@@ -37,8 +38,10 @@ from typing import Optional
 
 import yaml
 
-# Import core modules (to be created)
+# Import core modules
 from .core.encoder import TOPAEncoder
+from .core.encoder_v3 import TOPAV3Encoder
+from .core.schema import FocusMode as V3FocusMode
 from .core.token_budget import TokenBudget
 from .parsers.base import BaseParser
 from .parsers.junit import JUnitParser
@@ -46,7 +49,7 @@ from .parsers.pytest import PytestParser
 from .parsers.rspec import RSpecParser
 from .parsers.tap import TAPParser
 
-VERSION = "0.1.0"
+VERSION = "0.3.0"
 
 
 class FocusMode(Enum):
@@ -54,6 +57,7 @@ class FocusMode(Enum):
     CRITICAL = "critical"
     FAILURES = "failures"
     FIRST_FAILURE = "first-failure"
+    ALL = "all"  # v0.3 addition
 
 
 class InputFormat(Enum):
@@ -207,10 +211,18 @@ Examples:
     )
 
     parser.add_argument(
+        "--topa-version",
+        type=str,
+        choices=["v0.2", "v0.3"],
+        default="v0.3",
+        help="TOPA version to output (default: v0.3)",
+    )
+
+    parser.add_argument(
         "--limit",
         type=int,
-        default=2000,
-        help="Token budget limit (default: 2000)",
+        default=5000,
+        help="Token budget limit (default: 5000)",
     )
 
     parser.add_argument(
@@ -255,7 +267,15 @@ Examples:
         # Create encoder with specified parameters
         focus_mode = FocusMode(args.mode)
         token_budget = TokenBudget(args.limit)
-        encoder = TOPAEncoder(focus_mode.value, token_budget)
+        
+        # Choose encoder version
+        if args.topa_version == "v0.3":
+            # Get command from args for v0.3 context
+            command = " ".join(sys.argv)
+            encoder = TOPAV3Encoder(focus_mode.value, token_budget, command)
+        else:
+            # Legacy v0.2 encoder
+            encoder = TOPAEncoder(focus_mode.value, token_budget)
 
         # Generate TOPA output
         try:

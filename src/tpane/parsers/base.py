@@ -8,7 +8,7 @@ Abstract base class for all input format parsers.
 
 import re
 from abc import ABC, abstractmethod
-from typing import Any, Optional, Tuple
+from typing import Any, Optional
 
 try:
     from ..core.schema import ParsedTestData
@@ -131,7 +131,7 @@ class BaseParser(ABC):
 
     def _extract_assertion_values(
         self, text: str
-    ) -> Tuple[Optional[str], Optional[str]]:
+    ) -> tuple[Optional[str], Optional[str]]:
         """Extract expected and actual values from assertion failure text."""
         patterns = [
             # RSpec style: expected: X, got: Y

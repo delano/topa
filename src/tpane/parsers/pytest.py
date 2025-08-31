@@ -8,7 +8,7 @@ Parses pytest console output into TOPA format.
 
 import re
 from collections import defaultdict
-from typing import List, Optional
+from typing import Optional
 
 try:
     from ..core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
@@ -217,7 +217,7 @@ class PytestParser(BaseParser):
         )
 
     def _extract_assertion_from_context(
-        self, lines: List[str], start_index: int
+        self, lines: list[str], start_index: int
     ) -> Optional[tuple]:
         """Look ahead in lines for assertion details."""
         # Look at next few lines for assertion info

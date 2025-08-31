@@ -6,7 +6,7 @@ Data structures representing the standardized TOPA format.
 
 from dataclasses import asdict, dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Sequence, Collection
+from typing import Any, Optional
 
 
 class TestStatus(Enum):
@@ -33,7 +33,7 @@ class TestCounts:
     failed: int = 0
     errors: int = 0
 
-    def to_dict(self) -> Dict[str, int]:
+    def to_dict(self) -> dict[str, int]:
         return asdict(self)
 
 
@@ -44,7 +44,7 @@ class FileCounts:
     total: int = 0
     with_failures: int = 0
 
-    def to_dict(self) -> Dict[str, int]:
+    def to_dict(self) -> dict[str, int]:
         return asdict(self)
 
 
@@ -60,7 +60,7 @@ class TestResult:
     error: Optional[str] = None
     diff: Optional[str] = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary, excluding None values."""
         result = {"line": self.line, "name": self.name, "type": self.type.value}
 
@@ -81,7 +81,7 @@ class FileSummary:
     """File-level test results summary."""
 
     file: str
-    tests: List[TestResult] = field(default_factory=list)
+    tests: list[TestResult] = field(default_factory=list)
     truncated: Optional[int] = None  # Number of additional failures not shown
 
     def has_failures(self) -> bool:
@@ -96,9 +96,9 @@ class FileSummary:
         """Count errors/exceptions."""
         return sum(1 for t in self.tests if t.type == TestType.ERROR)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary format."""
-        result: Dict[str, Any] = {
+        result: dict[str, Any] = {
             "file": self.file,
             "tests": [test.to_dict() for test in self.tests],
         }
@@ -118,7 +118,7 @@ class Summary:
     files: FileCounts
     elapsed: Optional[str] = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary format."""
         result = {
             "status": self.status.value,
@@ -139,7 +139,7 @@ class FileIssues:
     file: str
     issues: int
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {"file": self.file, "issues": self.issues}
 
 
@@ -149,12 +149,12 @@ class TOPAOutput:
 
     version: str
     summary: Summary
-    failures: Optional[List[FileSummary]] = None
-    files_with_issues: Optional[List[FileIssues]] = None
+    failures: Optional[list[FileSummary]] = None
+    files_with_issues: Optional[list[FileIssues]] = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary format for serialization."""
-        result: Dict[str, Any] = {"version": self.version, "summary": self.summary.to_dict()}
+        result: dict[str, Any] = {"version": self.version, "summary": self.summary.to_dict()}
 
         if self.failures is not None:
             result["failures"] = [f.to_dict() for f in self.failures]
@@ -176,7 +176,7 @@ class ParsedTestData:
     error_tests: int = 0
     total_files: int = 0
     elapsed_time: Optional[str] = None
-    file_results: List["ParsedFileResult"] = field(default_factory=list)
+    file_results: list["ParsedFileResult"] = field(default_factory=list)
 
     @property
     def overall_status(self) -> TestStatus:
@@ -199,7 +199,7 @@ class ParsedFileResult:
     """File-level results from parsed input."""
 
     file_path: str
-    test_results: List["ParsedTestResult"] = field(default_factory=list)
+    test_results: list["ParsedTestResult"] = field(default_factory=list)
 
     def has_issues(self) -> bool:
         """Check if file has any failures or errors."""

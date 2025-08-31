@@ -7,7 +7,7 @@ Parses JUnit XML test results into TOPA format.
 """
 
 import re
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
 try:
     # Use defusedxml for security if available
@@ -108,7 +108,7 @@ class JUnitParser(BaseParser):
 
         return content.strip()
 
-    def _parse_testsuites(self, testsuites: List[Element]) -> ParsedTestData:
+    def _parse_testsuites(self, testsuites: list[Element]) -> ParsedTestData:
         """Parse multiple test suites."""
         file_results = []
         total_tests = 0

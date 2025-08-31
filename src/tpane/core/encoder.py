@@ -5,7 +5,7 @@ Converts parsed test data into standardized TOPA format with token optimization.
 """
 
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 try:
     from .schema import (
@@ -64,7 +64,7 @@ class TOPAEncoder:
         self.focus_mode = focus_mode
         self.budget = token_budget or TokenBudget(2000)
 
-    def encode(self, parsed_data: ParsedTestData) -> Dict[str, Any]:
+    def encode(self, parsed_data: ParsedTestData) -> dict[str, Any]:
         """Convert parsed test data to TOPA format."""
 
         # Build summary
@@ -109,7 +109,7 @@ class TOPAEncoder:
             elapsed=parsed_data.elapsed_time,
         )
 
-    def _build_files_with_issues(self, parsed_data: ParsedTestData) -> List[FileIssues]:
+    def _build_files_with_issues(self, parsed_data: ParsedTestData) -> list[FileIssues]:
         """Build file-level issue counts for summary mode."""
         files_with_issues = []
 
@@ -132,7 +132,7 @@ class TOPAEncoder:
 
     def _build_critical_failures(
         self, parsed_data: ParsedTestData
-    ) -> List[FileSummary]:
+    ) -> list[FileSummary]:
         """Build failure details for critical mode (errors only)."""
         failures = []
 
@@ -173,7 +173,7 @@ class TOPAEncoder:
 
     def _build_first_failure_details(
         self, parsed_data: ParsedTestData
-    ) -> List[FileSummary]:
+    ) -> list[FileSummary]:
         """Build failure details for first-failure mode."""
         failures = []
 
@@ -206,7 +206,7 @@ class TOPAEncoder:
 
     def _build_all_failure_details(
         self, parsed_data: ParsedTestData
-    ) -> List[FileSummary]:
+    ) -> list[FileSummary]:
         """Build complete failure details for failures mode."""
         failures = []
 

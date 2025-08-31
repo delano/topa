@@ -7,7 +7,7 @@ Parses RSpec JSON output into TOPA format.
 """
 
 import json
-from typing import Any, Dict
+from typing import Any
 
 try:
     from ..core.schema import ParsedFileResult, ParsedTestData, ParsedTestResult
@@ -45,7 +45,7 @@ class RSpecParser(BaseParser):
             # Fall back to text parsing
             return self._parse_as_text(content, f"JSON Parse Error: {e}")
 
-    def _parse_rspec_json(self, data: Dict[str, Any]) -> ParsedTestData:
+    def _parse_rspec_json(self, data: dict[str, Any]) -> ParsedTestData:
         """Parse RSpec JSON structure."""
         # Extract summary information
         summary = data.get("summary", {})
@@ -98,7 +98,7 @@ class RSpecParser(BaseParser):
             file_results=file_results,
         )
 
-    def _parse_example(self, example: Dict[str, Any]) -> ParsedTestResult:
+    def _parse_example(self, example: dict[str, Any]) -> ParsedTestResult:
         """Parse individual RSpec example."""
         # Basic info
         description = example.get("description", "unnamed example")

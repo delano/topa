@@ -38,6 +38,8 @@ dev = [
     "pytest-cov",
     "ruff",
     "mypy",
+    "types-PyYAML",
+    "types-defusedxml",
 ]
 security = [
     "defusedxml>=0.7.0",

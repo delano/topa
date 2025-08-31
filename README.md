@@ -107,7 +107,7 @@ summary:
   failed_tests: 12
   error_tests: 2
   execution_time: "23.45s"
-  
+
 file_results:
   - file_path: "spec/user_validation_spec.rb"
     test_count: 8
@@ -119,7 +119,7 @@ file_results:
         actual: "invalid@"
         error_message: "Email format validation failed"
         location: "spec/user_validation_spec.rb:42"
-        
+
 token_metadata:
   estimated_tokens: 1847
   budget_limit: 2000
@@ -159,7 +159,7 @@ For deployment and release information, see [DEPLOYMENT.md](DEPLOYMENT.md).
   run: |
     pytest --junitxml=results.xml
     python src/tpane.py --format junit results.xml > topa_output.yaml
-    
+
 - name: Analyze failures with AI
   uses: your-ai-analysis-action@v1
   with:

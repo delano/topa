@@ -281,7 +281,7 @@ parser_warnings:
 parser_warnings:
   - file: "user_validation_test.rb"
     line: 42
-    type: "missing_description" 
+    type: "missing_description"
     message: "Test case without explicit description"
     suggestion: "Add a test description using '## Description' prefix"
 
@@ -301,12 +301,12 @@ parser_warnings:
 class TOPAFormatter
   def format(test_results, parser_warnings: [], strict_mode: false)
     output = base_structure
-    
+
     # Determine status considering validation
     output[:summary][:status] = determine_status(
       test_results, parser_warnings, strict_mode
     )
-    
+
     # Add validation sections
     if parser_warnings.any?
       if strict_mode && warnings_block_execution?
@@ -315,7 +315,7 @@ class TOPAFormatter
         output[:parser_warnings] = format_warnings(parser_warnings)
       end
     end
-    
+
     # Apply focus mode logic with validation awareness
     apply_focus_mode(output, focus_mode)
   end

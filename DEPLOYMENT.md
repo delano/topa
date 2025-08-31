@@ -18,7 +18,7 @@
 
 **PyPI:**
 1. Register at https://pypi.org/
-2. Account Settings → API tokens → Generate token  
+2. Account Settings → API tokens → Generate token
 3. Scope: Project or account-wide
 
 ### GitHub Setup
@@ -28,7 +28,7 @@ Repository Settings → Secrets and variables → Actions → New repository sec
 - Name: `TEST_PYPI_API_TOKEN`
 - Value: `pypi-...` (from test.pypi.org)
 
-- Name: `PYPI_API_TOKEN` 
+- Name: `PYPI_API_TOKEN`
 - Value: `pypi-...` (from pypi.org)
 
 ## Workflow

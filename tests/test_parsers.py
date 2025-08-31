@@ -453,10 +453,10 @@ class TestResourceConstraints(unittest.TestCase):
         parser = JUnitParser()
 
         # XML with very large test count attribute
-        large_count_xml = f'''<?xml version="1.0"?>
+        large_count_xml = f"""<?xml version="1.0"?>
 <testsuite name="LargeCountTest" tests="{2**31 - 1}" failures="0">
   <testcase name="test_one" classname="TestClass"/>
-</testsuite>'''
+</testsuite>"""
 
         result = parser.parse(large_count_xml)
         # Should handle gracefully without integer overflow
@@ -524,10 +524,10 @@ class TestResourceConstraints(unittest.TestCase):
 
         # Create test with very long name
         long_name = "test_" + "x" * 10000
-        long_name_xml = f'''<?xml version="1.0"?>
+        long_name_xml = f"""<?xml version="1.0"?>
 <testsuite name="LongNameTest" tests="1">
   <testcase name="{long_name}" classname="TestClass"/>
-</testsuite>'''
+</testsuite>"""
 
         result = parser.parse(long_name_xml)
         self.assertEqual(result.total_tests, 1)

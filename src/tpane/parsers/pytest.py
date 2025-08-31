@@ -207,7 +207,7 @@ class PytestParser(BaseParser):
 
     def _extract_assertion_from_context(
         self, lines: list[str], start_index: int
-    ) -> Optional[tuple]:
+    ) -> Optional[tuple[str, str]]:
         """Look ahead in lines for assertion details."""
         # Look at next few lines for assertion info
         for i in range(start_index, min(start_index + 10, len(lines))):

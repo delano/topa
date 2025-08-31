@@ -37,7 +37,7 @@ jobs:
     - name: Check package
       run: |
         twine check dist/*
-        
+
     - name: List package contents
       run: |
         echo "=== Source distribution contents ==="

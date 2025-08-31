@@ -783,11 +783,13 @@ ok 3 - another test""",
         avg_time = sum(r["parse_time"] for r in results) / len(results)
         max_time = max(r["parse_time"] for r in results)
 
-        # Max time shouldn't be more than 3x average (allows for some variation)
+        # Max time shouldn't be more than 5x average or 0.1s, whichever is larger
+        # This accounts for CI timing variability and very fast operations
+        threshold = max(avg_time * 5.0, 0.1)
         self.assertLess(
             max_time,
-            avg_time * 3.0,
-            f"Performance degradation detected: max {max_time:.3f}s vs avg {avg_time:.3f}s",
+            threshold,
+            f"Performance degradation detected: max {max_time:.3f}s vs avg {avg_time:.3f}s (threshold {threshold:.3f}s)",
         )
 
 

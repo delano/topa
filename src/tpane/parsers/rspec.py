@@ -52,7 +52,9 @@ class RSpecParser(BaseParser):
         total_tests = summary.get("example_count", 0)
         failed_count = summary.get("failure_count", 0)
         error_count = summary.get("error_count", 0)  # RSpec might have errors
-        _pending_count = summary.get("pending_count", 0)  # Extracted but not used - pending tests count as passed
+        _pending_count = summary.get(
+            "pending_count", 0
+        )  # Extracted but not used - pending tests count as passed
         duration = summary.get("duration")
 
         # Passed tests = total - failed - errors - pending
@@ -109,9 +111,7 @@ class RSpecParser(BaseParser):
 
         # Create test result
         test_result = ParsedTestResult(
-            name=self._normalize_rspec_description(
-                full_description or description
-            ),
+            name=self._normalize_rspec_description(full_description or description),
             line=line_number,
             passed=passed,
         )
@@ -133,9 +133,7 @@ class RSpecParser(BaseParser):
                 else:
                     # This is an assertion failure
                     # Try to extract expected/actual from message
-                    expected, actual = self._extract_assertion_values(
-                        exception_message
-                    )
+                    expected, actual = self._extract_assertion_values(exception_message)
 
                     if expected and actual:
                         test_result.expected = expected
@@ -144,9 +142,7 @@ class RSpecParser(BaseParser):
                         # Use full exception info
                         test_result.expected = "assertion to pass"
                         test_result.actual = (
-                            f"{exception_class}: {exception_message}".strip(
-                                ": "
-                            )
+                            f"{exception_class}: {exception_message}".strip(": ")
                         )
 
         return test_result
@@ -184,9 +180,7 @@ class RSpecParser(BaseParser):
 
         return file_path
 
-    def _parse_as_text(
-        self, content: str, error_context: str
-    ) -> ParsedTestData:
+    def _parse_as_text(self, content: str, error_context: str) -> ParsedTestData:
         """Fallback text parsing for malformed JSON."""
         lines = content.split("\n")
 
@@ -206,22 +200,15 @@ class RSpecParser(BaseParser):
                 test_name = line
 
                 # Determine status
-                passed = (
-                    "failure" not in line.lower()
-                    and "error" not in line.lower()
-                )
+                passed = "failure" not in line.lower() and "error" not in line.lower()
                 is_error = "error" in line.lower()
 
                 test_result = ParsedTestResult(
                     name=self._normalize_test_name(test_name),
                     passed=passed,
                     error_message=line if is_error else None,
-                    expected="valid JSON"
-                    if not passed and not is_error
-                    else None,
-                    actual=error_context
-                    if not passed and not is_error
-                    else None,
+                    expected="valid JSON" if not passed and not is_error else None,
+                    actual=error_context if not passed and not is_error else None,
                 )
                 test_results.append(test_result)
 

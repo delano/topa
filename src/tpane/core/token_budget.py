@@ -71,9 +71,7 @@ class TokenBudget:
         """Consume tokens regardless of budget (for mandatory content)."""
         return self.consume(text)
 
-    def smart_truncate(
-        self, text: str, max_tokens: Optional[int] = None
-    ) -> str:
+    def smart_truncate(self, text: str, max_tokens: Optional[int] = None) -> str:
         """Truncate text intelligently to fit within token budget."""
         if not text:
             return text
@@ -136,12 +134,8 @@ class TokenBudget:
 
         # Calculate available space
         available_tokens = self.remaining
-        suffix_tokens = (
-            self.estimate_tokens(preserve_suffix) if preserve_suffix else 0
-        )
-        content_tokens = (
-            available_tokens - suffix_tokens - 1
-        )  # Buffer for "..."
+        suffix_tokens = self.estimate_tokens(preserve_suffix) if preserve_suffix else 0
+        content_tokens = available_tokens - suffix_tokens - 1  # Buffer for "..."
 
         if content_tokens <= 0:
             return preserve_suffix or ""

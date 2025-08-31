@@ -32,9 +32,7 @@ class PytestParser(BaseParser):
         super().__init__()
 
         # Pytest output patterns
-        self.test_line_pattern = re.compile(
-            r"^([^\s:]+(?:\.py)?):?:?(\w+)?\s+(.*)$"
-        )
+        self.test_line_pattern = re.compile(r"^([^\s:]+(?:\.py)?):?:?(\w+)?\s+(.*)$")
 
         self.failure_pattern = re.compile(
             r"^FAILED\s+([^:\s]+(?:\.py)?):?:?(\w+)?\s*-?\s*(.*)$"
@@ -44,9 +42,7 @@ class PytestParser(BaseParser):
             r"^ERROR\s+([^:\s]+(?:\.py)?):?:?(\w+)?\s*-?\s*(.*)$"
         )
 
-        self.passed_pattern = re.compile(
-            r"^PASSED\s+([^:\s]+(?:\.py)?):?:?(\w+)?"
-        )
+        self.passed_pattern = re.compile(r"^PASSED\s+([^:\s]+(?:\.py)?):?:?(\w+)?")
 
         self.summary_pattern = re.compile(
             r"=+\s*(\d+)\s+failed(?:,\s*(\d+)\s+passed)?(?:,\s*(\d+)\s+error)?.*?in\s+([\d.]+s?)"
@@ -105,9 +101,7 @@ class PytestParser(BaseParser):
                 )
 
                 # Look ahead for assertion details
-                assertion_details = self._extract_assertion_from_context(
-                    lines, i + 1
-                )
+                assertion_details = self._extract_assertion_from_context(lines, i + 1)
                 if assertion_details:
                     test_result.expected, test_result.actual = assertion_details
                 elif failure_reason:
@@ -159,16 +153,14 @@ class PytestParser(BaseParser):
         if total_tests == 0:
             total_tests = sum(len(tests) for tests in file_tests.values())
             passed_count = sum(
-                sum(1 for t in tests if t.passed)
-                for tests in file_tests.values()
+                sum(1 for t in tests if t.passed) for tests in file_tests.values()
             )
             failed_count = sum(
                 sum(1 for t in tests if not t.passed and not t.is_error)
                 for tests in file_tests.values()
             )
             error_count = sum(
-                sum(1 for t in tests if t.is_error)
-                for tests in file_tests.values()
+                sum(1 for t in tests if t.is_error) for tests in file_tests.values()
             )
 
         # Convert to file results
@@ -211,9 +203,7 @@ class PytestParser(BaseParser):
                 )
 
             file_results.append(
-                ParsedFileResult(
-                    file_path="pytest_output", test_results=generic_tests
-                )
+                ParsedFileResult(file_path="pytest_output", test_results=generic_tests)
             )
 
         return ParsedTestData(

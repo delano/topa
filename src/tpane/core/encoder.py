@@ -75,17 +75,13 @@ class TOPAEncoder:
 
         # Add details based on focus mode
         if self.focus_mode == FocusMode.SUMMARY:
-            topa_output.files_with_issues = self._build_files_with_issues(
-                parsed_data
-            )
+            topa_output.files_with_issues = self._build_files_with_issues(parsed_data)
 
         elif self.focus_mode == FocusMode.CRITICAL:
             topa_output.failures = self._build_critical_failures(parsed_data)
 
         elif self.focus_mode == FocusMode.FIRST_FAILURE:
-            topa_output.failures = self._build_first_failure_details(
-                parsed_data
-            )
+            topa_output.failures = self._build_first_failure_details(parsed_data)
 
         else:  # FAILURES mode (default)
             topa_output.failures = self._build_all_failure_details(parsed_data)
@@ -113,17 +109,13 @@ class TOPAEncoder:
             elapsed=parsed_data.elapsed_time,
         )
 
-    def _build_files_with_issues(
-        self, parsed_data: ParsedTestData
-    ) -> List[FileIssues]:
+    def _build_files_with_issues(self, parsed_data: ParsedTestData) -> List[FileIssues]:
         """Build file-level issue counts for summary mode."""
         files_with_issues = []
 
         for file_result in parsed_data.file_results:
             if file_result.has_issues():
-                issue_count = (
-                    file_result.failure_count() + file_result.error_count()
-                )
+                issue_count = file_result.failure_count() + file_result.error_count()
 
                 files_with_issues.append(
                     FileIssues(
@@ -270,9 +262,7 @@ class TOPAEncoder:
 
             # Add expected/actual if available
             if test.expected is not None:
-                result.expected = self.budget.smart_truncate(
-                    str(test.expected), 25
-                )
+                result.expected = self.budget.smart_truncate(str(test.expected), 25)
             if test.actual is not None:
                 result.actual = self.budget.smart_truncate(str(test.actual), 25)
 
@@ -284,15 +274,11 @@ class TOPAEncoder:
                 and isinstance(test.expected, str)
                 and isinstance(test.actual, str)
             ):
-                result.diff = self._generate_simple_diff(
-                    test.expected, test.actual
-                )
+                result.diff = self._generate_simple_diff(test.expected, test.actual)
 
             return result
 
-    def _generate_simple_diff(
-        self, expected: str, actual: str
-    ) -> Optional[str]:
+    def _generate_simple_diff(self, expected: str, actual: str) -> Optional[str]:
         """Generate a simple diff if budget allows."""
         if not self.budget.has_budget(50):  # Need reasonable space for diff
             return None
@@ -324,7 +310,18 @@ class TOPAEncoder:
 
             # Check for potentially malicious path patterns
             path_str = str(path)
-            if any(suspicious in path_str for suspicious in ['../', '..\\', '/etc/', '/proc/', '/sys/', 'C:\\Windows', 'C:\\System32']):
+            if any(
+                suspicious in path_str
+                for suspicious in [
+                    "../",
+                    "..\\",
+                    "/etc/",
+                    "/proc/",
+                    "/sys/",
+                    "C:\\Windows",
+                    "C:\\System32",
+                ]
+            ):
                 # For potentially suspicious paths, use only the filename
                 return path.name or "unknown"
 
@@ -347,14 +344,19 @@ class TOPAEncoder:
                 # Use joinpath to handle Windows drive letters properly
                 meaningful_parts = parts[-2:]
                 try:
-                    return '/'.join(meaningful_parts)  # Force forward slashes for consistency
+                    return "/".join(
+                        meaningful_parts
+                    )  # Force forward slashes for consistency
                 except (TypeError, ValueError, AttributeError) as e:
                     # Log the specific error for debugging
                     # TypeError: if meaningful_parts contains non-string elements
                     # ValueError: if join operation fails due to invalid characters
                     # AttributeError: if meaningful_parts is not iterable
                     import logging
-                    logging.debug(f"Path normalization failed for {meaningful_parts}: {e}")
+
+                    logging.debug(
+                        f"Path normalization failed for {meaningful_parts}: {e}"
+                    )
                     return path.name
 
             # Fall back to basename if nothing else works
@@ -370,7 +372,10 @@ class TOPAEncoder:
             # ValueError: Invalid path values
             # AttributeError: Missing attributes on path objects
             import logging
-            logging.debug(f"Path normalization completely failed for '{file_path}': {e}")
+
+            logging.debug(
+                f"Path normalization completely failed for '{file_path}': {e}"
+            )
             try:
                 return Path(file_path).name
             except (OSError, TypeError, ValueError):

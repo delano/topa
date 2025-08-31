@@ -25,9 +25,7 @@ class BaseParser(ABC):
     """Abstract base class for test output parsers."""
 
     def __init__(self):
-        self.line_number_pattern = re.compile(
-            r"(?:line|:)?\s*(\d+)", re.IGNORECASE
-        )
+        self.line_number_pattern = re.compile(r"(?:line|:)?\s*(\d+)", re.IGNORECASE)
 
     @abstractmethod
     def parse(self, content: str) -> ParsedTestData:
@@ -166,22 +164,16 @@ class BaseParser(ABC):
 
         # Calculate totals from file results if not provided
         if not data.total_tests and data.file_results:
-            data.total_tests = sum(
-                len(f.test_results) for f in data.file_results
-            )
+            data.total_tests = sum(len(f.test_results) for f in data.file_results)
             data.passed_tests = sum(
-                sum(1 for t in f.test_results if t.passed)
-                for f in data.file_results
+                sum(1 for t in f.test_results if t.passed) for f in data.file_results
             )
             data.failed_tests = sum(
-                sum(
-                    1 for t in f.test_results if not t.passed and not t.is_error
-                )
+                sum(1 for t in f.test_results if not t.passed and not t.is_error)
                 for f in data.file_results
             )
             data.error_tests = sum(
-                sum(1 for t in f.test_results if t.is_error)
-                for f in data.file_results
+                sum(1 for t in f.test_results if t.is_error) for f in data.file_results
             )
             data.total_files = len(data.file_results)
 

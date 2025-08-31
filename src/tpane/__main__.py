@@ -160,14 +160,10 @@ def read_input(input_file: Optional[str], max_size_mb: int = 50) -> str:
             print(f"Error: File '{input_file}' not found", file=sys.stderr)
             sys.exit(1)
         except UnicodeDecodeError:
-            print(
-                f"Error: Cannot decode '{input_file}' as UTF-8", file=sys.stderr
-            )
+            print(f"Error: Cannot decode '{input_file}' as UTF-8", file=sys.stderr)
             sys.exit(1)
         except OSError as e:
-            print(
-                f"Error: Cannot read file '{input_file}': {e}", file=sys.stderr
-            )
+            print(f"Error: Cannot read file '{input_file}': {e}", file=sys.stderr)
             sys.exit(1)
     else:
         # Read from stdin with size limit

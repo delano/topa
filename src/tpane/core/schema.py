@@ -160,9 +160,7 @@ class TOPAOutput:
             result["failures"] = [f.to_dict() for f in self.failures]
 
         if self.files_with_issues is not None:
-            result["files_with_issues"] = [
-                f.to_dict() for f in self.files_with_issues
-            ]
+            result["files_with_issues"] = [f.to_dict() for f in self.files_with_issues]
 
         return result
 
@@ -210,9 +208,7 @@ class ParsedFileResult:
     def failure_count(self) -> int:
         """Count assertion failures (not errors)."""
         return sum(
-            1
-            for r in self.test_results
-            if not r.passed and r.error_message is None
+            1 for r in self.test_results if not r.passed and r.error_message is None
         )
 
     def error_count(self) -> int:

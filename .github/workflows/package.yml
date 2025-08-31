@@ -8,6 +8,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -78,14 +81,16 @@ jobs:
       run: |
         pip install dist/*.whl
         python -c "import tpane; print(tpane.__version__ if hasattr(tpane, '__version__') else 'Import successful')"
-        tpane --help || echo "CLI test completed"
+        # Test CLI help functionality (allow non-zero exit if help is printed)
+        tpane --help || test $? -eq 0 -o $? -eq 2
 
     - name: Test source installation
       run: |
-        pip uninstall -y tpane.tpane
+        pip uninstall -y tpane
         pip install dist/*.tar.gz
         python -c "import tpane; print(tpane.__version__ if hasattr(tpane, '__version__') else 'Import successful')"
-        tpane --help || echo "CLI test completed"
+        # Test CLI help functionality (allow non-zero exit if help is printed)
+        tpane --help || test $? -eq 0 -o $? -eq 2
 
   publish-test:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'

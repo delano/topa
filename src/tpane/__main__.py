@@ -147,7 +147,7 @@ def read_input(input_file: Optional[str], max_size_mb: int = 50) -> str:
                 )
                 sys.exit(1)
 
-            with open(input_file, "r", encoding="utf-8") as f:
+            with open(input_file, encoding="utf-8") as f:
                 content = f.read()
                 if len(content) > MAX_INPUT_SIZE:
                     print(

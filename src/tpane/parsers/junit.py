@@ -171,12 +171,9 @@ class JUnitParser(BaseParser):
     def _parse_testcase(self, testcase: Element) -> ParsedTestResult:
         """Parse individual test case."""
         name = testcase.get("name", "unnamed test")
-        classname = testcase.get("classname", "")
 
-        # Normalize test name
+        # Normalize test name - just use the base name without classname prefix
         test_name = self._normalize_test_name(name)
-        if classname and classname not in test_name:
-            test_name = f"{classname}: {test_name}"
 
         # Extract line number if present
         line = None

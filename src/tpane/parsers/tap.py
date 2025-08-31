@@ -118,7 +118,7 @@ class TAPParser(BaseParser):
 
                 # Create test result
                 test_result = ParsedTestResult(
-                    name=self._normalize_test_name(description),
+                    name=description,
                     line=line_num + 1,  # TAP line number
                     passed=passed,
                 )

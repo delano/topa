@@ -636,10 +636,10 @@ ok 3 - another test'''),
             """Parse input in thread."""
             try:
                 # Import all parsers
-                from parsers.junit import JUnitParser
-                from parsers.pytest import PytestParser
-                from parsers.rspec import RSpecParser
-                from parsers.tap import TAPParser
+                from tpane.parsers.junit import JUnitParser
+                from tpane.parsers.pytest import PytestParser
+                from tpane.parsers.rspec import RSpecParser
+                from tpane.parsers.tap import TAPParser
 
                 parsers = [JUnitParser(), PytestParser(), RSpecParser(), TAPParser()]
 

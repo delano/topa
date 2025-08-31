@@ -87,7 +87,7 @@ class BaseParser(ABC):
                     if value < 1:
                         return f"{int(value * 1000)}ms"
                     else:
-                        return f"{value:.1f}s"
+                        return f"{value:g}s"
                 elif unit == "ms":
                     if value < 1:
                         return f"{int(value * 1000)}μs"

@@ -72,9 +72,6 @@ class PytestParser(BaseParser):
         elapsed_time = None
 
         # Parse mode
-        in_failure_details = False
-        current_failure_details = []
-        current_test_info = None
 
         for i, line in enumerate(lines):
             line = line.strip()
@@ -156,12 +153,7 @@ class PytestParser(BaseParser):
                 file_tests[file_path].append(test_result)
                 continue
 
-            # Look for assertion patterns in failure details
-            if "assert" in line.lower() and not in_failure_details:
-                expected, actual = self._extract_assertion_values(line)
-                if expected and actual:
-                    # This might be useful context for the next test
-                    pass
+            # Skip unmatched lines
 
         # If we couldn't parse summary, calculate from parsed tests
         if total_tests == 0:

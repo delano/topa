@@ -99,17 +99,22 @@ class TAPParser(BaseParser):
                         passed = (
                             False  # Unexpected pass - TODO should have failed
                         )
-                        pending_diagnostics.append(
-                            "Unexpected pass - TODO item succeeded"
-                        )
+                        todo_msg = "Unexpected pass - TODO item succeeded"
+                        if directive_reason:
+                            todo_msg += f": {directive_reason}"
+                        pending_diagnostics.append(todo_msg)
                     else:
                         # TODO tests that fail are expected - treat as passed
                         # This is counterintuitive but follows TAP standard behavior
                         passed = True
+                        if directive_reason:
+                            pending_diagnostics.append(f"TODO: {directive_reason}")
 
                 elif directive == "SKIP":
                     # Skipped tests are treated as passed
                     passed = True
+                    if directive_reason:
+                        pending_diagnostics.append(f"Skipped: {directive_reason}")
 
                 # Create test result
                 test_result = ParsedTestResult(

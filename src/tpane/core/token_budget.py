@@ -147,7 +147,6 @@ class TokenBudget:
             return preserve_suffix or ""
 
         # Truncate main content
-        content_chars = int(content_tokens * self.CHARS_PER_TOKEN * 0.8)
         truncated_content = self.smart_truncate(text, content_tokens)
 
         if preserve_suffix:

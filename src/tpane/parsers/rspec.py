@@ -52,7 +52,7 @@ class RSpecParser(BaseParser):
         total_tests = summary.get("example_count", 0)
         failed_count = summary.get("failure_count", 0)
         error_count = summary.get("error_count", 0)  # RSpec might have errors
-        pending_count = summary.get("pending_count", 0)
+        _pending_count = summary.get("pending_count", 0)  # Extracted but not used - pending tests count as passed
         duration = summary.get("duration")
 
         # Passed tests = total - failed - errors - pending

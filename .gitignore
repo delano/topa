@@ -24,3 +24,8 @@ vendor
 doc/
 __pycache__
 src/tpane.egg-info
+
+# Coverage files
+.coverage
+coverage.xml
+htmlcov/

@@ -4,7 +4,7 @@ This guide covers setting up the development environment, running tests, and con
 
 ## Prerequisites
 
-- Python 3.7 or higher
+- Python 3.9 or higher
 - pip package manager
 
 ## Development Setup
@@ -98,7 +98,7 @@ tpane/
 ### Type Hints
 
 - All public functions must have type hints
-- Use `typing` module for Python 3.7 compatibility
+- Use modern `typing` syntax for Python 3.9+
 - mypy configuration enforces strict typing
 
 ### Testing
@@ -141,7 +141,7 @@ tpane/
 
 **Ruff not found**: Install development dependencies or install ruff directly with `pip install ruff`
 
-**Type errors**: Check that you're using Python 3.7+ compatible syntax and type hints
+**Type errors**: Check that you're using Python 3.9+ compatible syntax and type hints
 
 ### Development Tips
 

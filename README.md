@@ -22,7 +22,7 @@ Just like T-Pain's auto-tune transforms raw vocals into polished audio, `tpane` 
 ## Quick Start
 
 ```bash
-# Install dependencies (requires Python 3.7+)
+# Install dependencies (requires Python 3.9+)
 pip install pyyaml
 
 # Convert JUnit XML to TOPA format

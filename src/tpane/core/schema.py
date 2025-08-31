@@ -154,7 +154,10 @@ class TOPAOutput:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary format for serialization."""
-        result: dict[str, Any] = {"version": self.version, "summary": self.summary.to_dict()}
+        result: dict[str, Any] = {
+            "version": self.version,
+            "summary": self.summary.to_dict(),
+        }
 
         if self.failures is not None:
             result["failures"] = [f.to_dict() for f in self.failures]

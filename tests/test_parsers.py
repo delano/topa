@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test suite for TOPA parsers
+Test suite for TOPAZ parsers
 """
 
 import sys
@@ -256,10 +256,10 @@ class TestEdgeCases(unittest.TestCase):
     def test_path_normalization_edge_cases(self):
         """Test path normalization with various edge cases."""
         sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-        from tpane.core.encoder import TOPAEncoder
+        from tpane.core.encoder import TOPAZEncoder
         from tpane.core.token_budget import TokenBudget
 
-        encoder = TOPAEncoder("failures", TokenBudget(1000))
+        encoder = TOPAZEncoder("failures", TokenBudget(1000))
 
         # Test various path formats
         test_paths = [
@@ -403,10 +403,10 @@ class TestSecurityEdgeCases(unittest.TestCase):
     def test_path_normalization_security_display(self):
         """Test path normalization handles potentially malicious paths safely for display."""
         sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-        from tpane.core.encoder import TOPAEncoder
+        from tpane.core.encoder import TOPAZEncoder
         from tpane.core.token_budget import TokenBudget
 
-        encoder = TOPAEncoder("failures", TokenBudget(1000))
+        encoder = TOPAZEncoder("failures", TokenBudget(1000))
 
         # Test various edge case paths (these are for display, not file access)
         test_paths = [

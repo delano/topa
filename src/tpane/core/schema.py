@@ -1,7 +1,7 @@
 """
-TOPA Schema Definitions
+TOPAZ Schema Definitions
 
-Data structures representing the standardized TOPA format.
+Data structures representing the standardized TOPAZ format.
 """
 
 from dataclasses import asdict, dataclass, field
@@ -25,7 +25,7 @@ class TestType(Enum):
 
 
 class FocusMode(Enum):
-    """TOPA v0.3 focus modes for progressive disclosure."""
+    """TOPAZ v0.3 focus modes for progressive disclosure."""
 
     SUMMARY = "summary"
     CRITICAL = "critical"
@@ -49,7 +49,7 @@ class ProjectType(Enum):
     GENERIC = "generic"
 
 
-# Cross-language field normalization mappings from TOPA v0.3 spec
+# Cross-language field normalization mappings from TOPAZ v0.3 spec
 ENVIRONMENT_MAPPINGS: dict[str, list[str]] = {
     "CI": ["CI", "GITHUB_ACTIONS", "GITLAB_CI", "JENKINS_URL", "TRAVIS", "CIRCLECI"],
     "ENV": ["RAILS_ENV", "NODE_ENV", "APP_ENV", "DJANGO_SETTINGS_MODULE", "FLASK_ENV"],
@@ -81,7 +81,7 @@ PROJECT_DETECTION_PATTERNS: dict[ProjectType, list[str]] = {
 
 
 def normalize_environment_variables(env_dict: dict[str, str]) -> dict[str, str]:
-    """Normalize environment variables to TOPA standard keys."""
+    """Normalize environment variables to TOPAZ standard keys."""
     normalized = {}
 
     for topa_key, possible_keys in ENVIRONMENT_MAPPINGS.items():
@@ -95,7 +95,7 @@ def normalize_environment_variables(env_dict: dict[str, str]) -> dict[str, str]:
 
 
 def normalize_flags(flags: list[str]) -> list[str]:
-    """Normalize command-line flags to TOPA standard terms."""
+    """Normalize command-line flags to TOPAZ standard terms."""
     normalized = set()
 
     for flag in flags:
@@ -228,7 +228,7 @@ class FileIssues:
 
 @dataclass
 class ExecutionContext:
-    """TOPA v0.3 execution context with compact field formats."""
+    """TOPAZ v0.3 execution context with compact field formats."""
 
     command: str
     pid: int
@@ -236,7 +236,7 @@ class ExecutionContext:
     runtime: str  # "language version (platform)"
     test_framework: str  # "name (isolation_mode)"
     files_under_test: int
-    protocol: str  # "TOPA v0.3 | focus: mode | limit: tokens"
+    protocol: str  # "TOPAZ v0.3 | focus: mode | limit: tokens"
     package_manager: Optional[str] = None  # "name version"
     vcs: Optional[str] = None  # "system branch@commit"
     environment: Optional[dict[str, str]] = None  # Non-default env vars only
@@ -275,7 +275,7 @@ class ExecutionContext:
 
 @dataclass
 class V3FailureResult:
-    """TOPA v0.3 compact failure result."""
+    """TOPAZ v0.3 compact failure result."""
 
     line: int
     description: str
@@ -308,8 +308,8 @@ class V3FailureResult:
 
 
 @dataclass
-class TOPAOutput:
-    """Complete TOPA format output."""
+class TOPAZOutput:
+    """Complete TOPAZ format output."""
 
     version: str
     summary: Summary
@@ -333,8 +333,8 @@ class TOPAOutput:
 
 
 @dataclass
-class TOPAV3Output:
-    """TOPA v0.3 format output with execution context."""
+class TOPAZV3Output:
+    """TOPAZ v0.3 format output with execution context."""
 
     execution_context: ExecutionContext
     focus_mode: FocusMode
@@ -365,7 +365,7 @@ class TOPAV3Output:
         return result
 
 
-# Parsed test data from input (before TOPA encoding)
+# Parsed test data from input (before TOPAZ encoding)
 @dataclass
 class ParsedTestData:
     """Raw test data parsed from various input formats."""

@@ -39,7 +39,7 @@ savings at scale. For a team running AI-assisted code review on hundreds of test
 ## The Two-Part Strategy
 
 ### Part 1: The Specification (High Value, Long-term)
-Test Output Protocol for AI (TOPA):
+Test Output Protocol for AI (TOPAZ):
   core_schema:
     - status: PASS/FAIL/ERROR
     - file_path: relative/normalized
@@ -59,7 +59,7 @@ Test Output Protocol for AI (TOPA):
 ### Part 2: The Bridge Utility (Transitional Value)
 - STDIN -> STDOUT translator
 - Ingests: JUnit XML, TAP, RSpec JSON, pytest, etc.
-- Outputs: Standardized TOPA format
+- Outputs: Standardized TOPAZ format
 - Purpose: Immediate value while tools adopt native support
 
 ## Value Proposition

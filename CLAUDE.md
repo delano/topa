@@ -4,19 +4,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**tpane** is the reference implementation of TOPA (Test Output Protocol for AI) - a standardized format for optimizing test output for LLM consumption. The tool implements **TOPA v0.3** by default, achieving 66% token reduction (375 → 125 tokens) with compact EXECUTION_CONTEXT headers and smart defaults. This repo contains both the tpane universal adapter and the TOPA specification itself.
+**tpane** is the reference implementation of TOPAZ (Test Output Protocol for AI) - a standardized format for optimizing test output for LLM consumption. The tool implements **TOPAZ v0.3** by default, achieving 66% token reduction (375 → 125 tokens) with compact EXECUTION_CONTEXT headers and smart defaults. This repo contains both the tpane universal adapter and the TOPAZ specification itself.
 
 **Current Implementation Status**:
-- ✅ **TOPA v0.3** with ExecutionContext class and compact format (66% token reduction)
+- ✅ **TOPAZ v0.3** with ExecutionContext class and compact format (66% token reduction)
 - ✅ **Cross-language normalization** via environment/flag mappings
 - ✅ **Environment detection** (runtime, VCS, package manager, project type)
-- ✅ **Dual encoder support**: TOPAV3Encoder (default) and TOPAEncoder (legacy)
-- ✅ **Enhanced CLI**: `--topa-version v0.3|v0.2`, `--mode all` support
+- ✅ **Dual encoder support**: TOPAZV3Encoder (default) and TOPAZEncoder (legacy)
+- ✅ **Enhanced CLI**: `--topaz-version v0.3|v0.2`, `--mode all` support
 - ✅ **Updated defaults**: 5000 token limit, v0.3 format
 
 **Architecture**:
 - Based on tryouts Ruby library validation and real-world usage patterns
-- Universal adapter serving as stopgap until frameworks support TOPA natively
+- Universal adapter serving as stopgap until frameworks support TOPAZ natively
 
 ## Development Commands
 
@@ -62,7 +62,7 @@ pytest -k "test_pattern"
 
 ### Running the Tool
 ```bash
-# Basic usage (TOPA v0.3 default)
+# Basic usage (TOPAZ v0.3 default)
 python src/tpane.py test_output.txt
 
 # With specific format and mode
@@ -74,9 +74,9 @@ pytest | python src/tpane.py --format pytest --mode summary
 # With token limit (default: 5000)
 python src/tpane.py --limit 1000 large_test_output.xml
 
-# TOPA version control
-python src/tpane.py --topa-version v0.3 test_output.txt  # default
-python src/tpane.py --topa-version v0.2 test_output.txt  # legacy
+# TOPAZ version control
+python src/tpane.py --topaz-version v0.3 test_output.txt  # default
+python src/tpane.py --topaz-version v0.2 test_output.txt  # legacy
 
 # New focus modes
 python src/tpane.py --mode all comprehensive_output.xml
@@ -88,8 +88,8 @@ python src/tpane.py --mode all comprehensive_output.xml
 The project follows a **Parser-Encoder-Schema** pattern:
 
 - **Parsers** (`src/tpane/parsers/`): Convert various test formats (JUnit, pytest, TAP, RSpec) into standardized internal representation
-- **Core Engine** (`src/tpane/core/`): Handles token budgeting, TOPA encoding, and schema definitions
-- **Schema** (`src/tpane/core/schema.py`): Defines the data structures for both parsed input and TOPA output
+- **Core Engine** (`src/tpane/core/`): Handles token budgeting, TOPAZ encoding, and schema definitions
+- **Schema** (`src/tpane/core/schema.py`): Defines the data structures for both parsed input and TOPAZ output
 
 ### Key Components
 
@@ -105,7 +105,7 @@ The project follows a **Parser-Encoder-Schema** pattern:
 
 **Schema System**: `src/tpane/core/schema.py`
 - `ParsedTestData` and `ParsedFileResult`: Internal representation after parsing
-- `TOPAOutput` and related classes: Final TOPA format structure
+- `TOPAZOutput` and related classes: Final TOPAZ format structure
 - Enum types for test status and focus modes
 
 ### Parser Architecture
@@ -134,8 +134,8 @@ src/tpane/
 ├── __init__.py           # Package initialization and exports
 ├── __main__.py           # CLI interface with v0.3 support
 ├── core/                 # Core engine components
-│   ├── encoder.py        # Legacy TOPA v0.2 encoder
-│   ├── encoder_v3.py     # TOPA v0.3 encoder with execution context
+│   ├── encoder.py        # Legacy TOPAZ v0.2 encoder
+│   ├── encoder_v3.py     # TOPAZ v0.3 encoder with execution context
 │   ├── schema.py         # Data structures for both v0.2 and v0.3
 │   └── token_budget.py   # Token management and optimization
 └── parsers/              # Test format parsers
@@ -146,8 +146,8 @@ src/tpane/
     └── tap.py           # TAP format parser
 ```
 
-### TOPA Standard Implementation
-The tool implements TOPA v0.3 specification with tryouts-inspired design:
+### TOPAZ Standard Implementation
+The tool implements TOPAZ v0.3 specification with tryouts-inspired design:
 - **Token efficiency**: 66% reduction (375 → 125 tokens) with compact format
 - **Execution context**: Environment details for debugging (command, runtime, VCS, etc.)
 - **Focus modes**: summary, critical, failures, first-failure, all
@@ -182,10 +182,10 @@ Before submitting changes:
 
 The project enforces strict typing with mypy and comprehensive linting with ruff to maintain code quality.
 
-## TOPA v0.3 Philosophy and Implementation Notes
+## TOPAZ v0.3 Philosophy and Implementation Notes
 
 ### Design Philosophy
-TOPA v0.3 represents "codified best practices" for AI-optimized test output based on real-world usage in the Ruby tryouts library. Key principles:
+TOPAZ v0.3 represents "codified best practices" for AI-optimized test output based on real-world usage in the Ruby tryouts library. Key principles:
 
 - **What to exclude matters**: Some data (like timestamps) can confuse LLM interpretation when test suites simulate time
 - **Upfront context prevents circular debugging**: Include environment, versions, and flags that commonly cause issues
@@ -199,8 +199,8 @@ The v0.3 format is validated by the tryouts Ruby library's `--agent` mode, which
 - Cross-language applicability (Ruby \u2192 Python \u2192 JavaScript \u2192 Java)
 
 ### Implementation Strategy
-- **Universal Adapter**: tpane serves as stopgap until test frameworks support TOPA natively
+- **Universal Adapter**: tpane serves as stopgap until test frameworks support TOPAZ natively
 - **Dual Version Support**: v0.3 default with v0.2 backward compatibility
 - **Environment Detection**: Automatic runtime, VCS, package manager detection
 - **Cross-Language Normalization**: Consistent field names across frameworks
-- This repo is home for both thee tpane reference implementation and TOPA the sepcification itself.
+- This repo is home for both thee tpane reference implementation and TOPAZ the sepcification itself.

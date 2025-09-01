@@ -8,7 +8,7 @@ version = "0.1.0"
 authors = [
     {name = "Delano Mandelbaum", email = "delano@solutious.com"},
 ]
-description = "Reference implementation of the TOPA (Test Output Protocol for AI) standard"
+description = "Reference implementation of the TOPAZ (Test Output Protocol for AI Zealots) standard"
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.9"

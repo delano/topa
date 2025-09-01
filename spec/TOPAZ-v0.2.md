@@ -1,8 +1,8 @@
-# TOPA v0.2 - Test Output Protocol for AI
+# TOPAZ v0.2 - Test Output Protocol for AI
 
 ## Overview
 
-TOPA (Test Output Protocol for AI) is a standardized test output format specifically designed for LLM consumption. It addresses the token efficiency, structured parsing, and cross-tool integration needs of AI-powered development workflows.
+TOPAZ (Test Output Protocol for AI) is a standardized test output format specifically designed for LLM consumption. It addresses the token efficiency, structured parsing, and cross-tool integration needs of AI-powered development workflows.
 
 **Key Benefits:**
 - 60-80% token reduction compared to raw test output
@@ -84,7 +84,7 @@ failures:
 
 ### **NEW** Validation Integration
 
-TOPA v0.2 introduces comprehensive validation support:
+TOPAZ v0.2 introduces comprehensive validation support:
 
 #### Strict Mode Operation
 ```yaml
@@ -146,7 +146,7 @@ parser_warnings:
 
 ## Focus Modes
 
-TOPA v0.2 maintains all v0.1 focus modes with validation enhancements:
+TOPAZ v0.2 maintains all v0.1 focus modes with validation enhancements:
 
 ### 1. Summary Mode
 Shows only high-level statistics including validation status.
@@ -239,7 +239,7 @@ parser_warnings:
 
 ## **NEW** Parser Warning Types
 
-TOPA v0.2 standardizes common parser warning categories:
+TOPAZ v0.2 standardizes common parser warning categories:
 
 ### Structural Warnings
 - `missing_description`: Test cases without explicit descriptions
@@ -298,7 +298,7 @@ parser_warnings:
 ### **NEW** Validation Pipeline Integration
 ```ruby
 # Pseudocode for v0.2 implementation
-class TOPAFormatter
+class TOPAZFormatter
   def format(test_results, parser_warnings: [], strict_mode: false)
     output = base_structure
 
@@ -334,7 +334,7 @@ end
 
 ## Validation Requirements v0.2
 
-A valid TOPA v0.2 implementation must:
+A valid TOPAZ v0.2 implementation must:
 
 1. **Support Dual Validation Modes**: Both strict and non-strict operation
 2. **Preserve Warning Semantics**: All parser warnings must be actionable

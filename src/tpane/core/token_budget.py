@@ -1,7 +1,7 @@
 """
 Token Budget Management
 
-Handles token counting and budget-aware truncation for TOPA output.
+Handles token counting and budget-aware truncation for TOPAZ output.
 """
 
 from dataclasses import dataclass
@@ -10,7 +10,7 @@ from typing import Optional
 
 @dataclass
 class TokenBudget:
-    """Manages token allocation and consumption for TOPA output."""
+    """Manages token allocation and consumption for TOPAZ output."""
 
     limit: int
     consumed: int = 0

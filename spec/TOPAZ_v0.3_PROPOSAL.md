@@ -1,6 +1,6 @@
 Summary
 
-The optimized TOPA v0.3 format is now **maximally respectful of context window size** while retaining all critical debugging information:
+The optimized TOPAZ v0.3 format is now **maximally respectful of context window size** while retaining all critical debugging information:
 
 ### Token Efficiency Achieved:
 - **66% reduction** in token usage (375 → 125 tokens)
@@ -30,17 +30,17 @@ The optimized TOPA v0.3 format is now **maximally respectful of context window s
 3. **Language-agnostic**: Format works for Python, JavaScript, Java, etc.
 4. **Focus modes**: `summary` mode can be as low as 50 tokens
 
-The TOPA v0.3 proposal provides a robust standard that respects LLM context windows while ensuring agents have the information needed to debug effectively without going in circles.
+The TOPAZ v0.3 proposal provides a robust standard that respects LLM context windows while ensuring agents have the information needed to debug effectively without going in circles.
 
 ---
 
-# TOPA v0.3 Specification Proposal
+# TOPAZ v0.3 Specification Proposal
 
 ## Test Output Protocol for AI - Version 0.3
 
 ### Overview
 
-TOPA (Test Output Protocol for AI) is a language-agnostic, token-efficient format for communicating test execution results and context to AI agents. Version 0.3 optimizes for minimal token usage while providing maximum diagnostic value.
+TOPAZ (Test Output Protocol for AI) is a language-agnostic, token-efficient format for communicating test execution results and context to AI agents. Version 0.3 optimizes for minimal token usage while providing maximum diagnostic value.
 
 ### Key Changes from v0.2
 
@@ -49,7 +49,7 @@ TOPA (Test Output Protocol for AI) is a language-agnostic, token-efficient forma
 3. **Smart Defaults**: Only show non-standard configurations
 4. **Normalized Field Names**: Shorter, consistent naming across languages
 
-### TOPA v0.3 Format Specification
+### TOPAZ v0.3 Format Specification
 
 #### Execution Context (Header)
 
@@ -63,7 +63,7 @@ EXECUTION_CONTEXT:
   environment: <KEY=value, ...>        # Optional: only non-defaults
   test_framework: <name> (<isolation_mode>)
   flags: <flag1, flag2, ...>          # Optional: only if set
-  protocol: TOPA v0.3 | focus: <mode> | limit: <tokens>
+  protocol: TOPAZ v0.3 | focus: <mode> | limit: <tokens>
   project_type: <type>                # Optional: only if detectable
   files_under_test: <count>
 ```
@@ -104,13 +104,13 @@ Files:
 | `environment` | Relevant env vars | `CI=github, ENV=test` | No |
 | `test_framework` | Framework and isolation | `pytest (isolated)` | Yes |
 | `flags` | Execution flags | `verbose, parallel` | No |
-| `protocol` | TOPA version and config | `TOPA v0.3 \| focus: failures \| limit: 5000` | Yes |
+| `protocol` | TOPAZ version and config | `TOPAZ v0.3 \| focus: failures \| limit: 5000` | Yes |
 | `project_type` | Auto-detected type | `python_package` | No |
 | `files_under_test` | Number of test files | `42` | Yes |
 
 #### Environment Variables (Normalized)
 
-| TOPA Key | Maps From | Description |
+| TOPAZ Key | Maps From | Description |
 |----------|-----------|-------------|
 | `CI` | `CI`, `GITHUB_ACTIONS`, `GITLAB_CI` | CI system identifier |
 | `ENV` | `RAILS_ENV`, `NODE_ENV`, `APP_ENV` | Application environment |
@@ -182,7 +182,7 @@ EXECUTION_CONTEXT:
   environment: CI=github, COV=1
   test_framework: pytest (isolated)
   flags: verbose, coverage
-  protocol: TOPA v0.3 | focus: failures | limit: 5000
+  protocol: TOPAZ v0.3 | focus: failures | limit: 5000
   project_type: python_package
   files_under_test: 24
 ```
@@ -196,7 +196,7 @@ EXECUTION_CONTEXT:
   package_manager: npm 10.2.3
   vcs: git develop@f3e2d1c
   test_framework: jest (isolated)
-  protocol: TOPA v0.3 | focus: all | limit: 10000
+  protocol: TOPAZ v0.3 | focus: all | limit: 10000
   project_type: node_package
   files_under_test: 18
 ```
@@ -212,7 +212,7 @@ EXECUTION_CONTEXT:
   environment: CI=jenkins
   test_framework: junit5 (isolated)
   flags: parallel
-  protocol: TOPA v0.3 | focus: failures | limit: 5000
+  protocol: TOPAZ v0.3 | focus: failures | limit: 5000
   project_type: java_maven
   files_under_test: 52
 ```

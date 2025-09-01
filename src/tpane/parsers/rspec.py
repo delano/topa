@@ -3,7 +3,7 @@
 """
 RSpec JSON Parser
 
-Parses RSpec JSON output into TOPA format.
+Parses RSpec JSON output into TOPAZ format.
 """
 
 import json
@@ -47,7 +47,7 @@ class RSpecParser(BaseParser):
         duration = summary.get("duration")
 
         # Passed tests = total - failed - errors - pending
-        # (Pending tests are usually counted as passed for TOPA purposes)
+        # (Pending tests are usually counted as passed for TOPAZ purposes)
         passed_count = total_tests - failed_count - error_count
 
         # Parse elapsed time

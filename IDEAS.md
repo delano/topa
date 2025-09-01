@@ -1,10 +1,10 @@
-# TOPA Ideas & Evaluation Log
+# TOPAZ Ideas & Evaluation Log
 
-This document tracks ongoing dialogue about TOPA evolution, structured for DRY iteration and quick feedback cycles.
+This document tracks ongoing dialogue about TOPAZ evolution, structured for DRY iteration and quick feedback cycles.
 
 ## Current Status
 
-**Implemented**: TOPA v0.3 with ExecutionContext, cross-language normalization, 66% token reduction
+**Implemented**: TOPAZ v0.3 with ExecutionContext, cross-language normalization, 66% token reduction
 **Active**: Ideas evaluation for incremental improvements
 
 ---
@@ -16,10 +16,10 @@ This document tracks ongoing dialogue about TOPA evolution, structured for DRY i
 **Complexity**: Medium
 
 ### Concept
-Add hypermedia action links to TOPA output, inspired by REST HATEOAS, to provide contextual next-step commands for debugging.
+Add hypermedia action links to TOPAZ output, inspired by REST HATEOAS, to provide contextual next-step commands for debugging.
 
 ### Problem Statement
-Current TOPA tells you **what happened** but leaves you to figure out **what to do next**. LLMs suggest generic debugging steps without knowing exact framework syntax.
+Current TOPAZ tells you **what happened** but leaves you to figure out **what to do next**. LLMs suggest generic debugging steps without knowing exact framework syntax.
 
 ### Proposed Solution
 ```yaml

@@ -3,7 +3,7 @@
 """
 JUnit XML Parser
 
-Parses JUnit XML test results into TOPA format.
+Parses JUnit XML test results into TOPAZ format.
 """
 
 import re

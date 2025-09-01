@@ -1,6 +1,6 @@
 # tpane
 
-**The reference implementation of the TOPA (Test Output Protocol for AI) standard**
+**The reference implementation of the TOPAZ (Test Output Protocol for AI Zealots) standard**
 
 ## Why "tpane"?
 
@@ -14,7 +14,7 @@ Just like T-Pain's auto-tune transforms raw vocals into polished audio, `tpane` 
 
 ## Key Benefits
 
-- **60-80% token reduction** with TOPA v0.3 format (66% improvement over v0.2)
+- **60-80% token reduction** with TOPAZ v0.3 format (66% improvement over v0.2)
 - **Structured, predictable format** for reliable AI parsing
 - **Language-agnostic design** for cross-framework adoption
 - **Progressive disclosure** based on context and budget constraints
@@ -25,7 +25,7 @@ Just like T-Pain's auto-tune transforms raw vocals into polished audio, `tpane` 
 # Install dependencies (requires Python 3.9+)
 pip install pyyaml
 
-# Convert JUnit XML to TOPA format
+# Convert JUnit XML to TOPAZ format
 python src/tpane.py --format junit test-results.xml
 
 # Process pytest output with summary mode
@@ -74,30 +74,30 @@ tpane --mode first-failure test_output.txt
 tpane --limit 1000 large_test_output.xml
 tpane --limit 10000 comprehensive_results.json
 
-# Use TOPA v0.3 format (default)
-tpane --topa-version v0.3 test_output.txt
+# Use TOPAZ v0.3 format (default)
+tpane --topaz-version v0.3 test_output.txt
 
 # Use legacy v0.2 format
-tpane --topa-version v0.2 test_output.txt
+tpane --topaz-version v0.2 test_output.txt
 
 # Handle large files (default max: 50MB)
 tpane --max-input-size 100 very_large_results.xml
 ```
 
-## About TOPA
+## About TOPAZ
 
-TOPA (Test Output Protocol for AI) is a standardized test output format designed specifically for LLM consumption. It addresses the token efficiency, structured parsing, and cross-tool integration needs of AI-powered development workflows.
+TOPAZ (Test Output Protocol for AI Zealots) is a standardized test output format designed specifically for LLM consumption. It addresses the token efficiency, structured parsing, and cross-tool integration needs of AI-powered development workflows.
 
-**TOPA Design Principles:**
+**TOPAZ Design Principles:**
 1. **Token Efficiency**: Minimize tokens while preserving semantic completeness
 2. **Structured Data**: Consistent schema for reliable programmatic access
 3. **Semantic Clarity**: Clear causality (what failed and why) with actionable context
 4. **Progressive Disclosure**: Multiple detail levels based on available budget
 5. **Cross-Framework**: Language and tool agnostic design
 
-## TOPA Output Format
+## TOPAZ Output Format
 
-The `tpane` tool outputs YAML-formatted TOPA data. **TOPA v0.3** (default) includes:
+The `tpane` tool outputs YAML-formatted TOPAZ data. **TOPAZ v0.3** (default) includes:
 
 - **Execution Context**: Environment details for debugging (command, runtime, VCS info)
 - **Compact Format**: Single-line structures for maximum token efficiency
@@ -105,7 +105,7 @@ The `tpane` tool outputs YAML-formatted TOPA data. **TOPA v0.3** (default) inclu
 - **Cross-Language Normalization**: Consistent field names across test frameworks
 - **Smart Defaults**: Only shows non-standard configurations
 
-### Example Output (TOPA v0.3 - Default)
+### Example Output (TOPAZ v0.3 - Default)
 ```yaml
 EXECUTION_CONTEXT:
   command: python src/tpane.py --format pytest tests/
@@ -114,7 +114,7 @@ EXECUTION_CONTEXT:
   package_manager: pip 23.0.1
   vcs: git main@a1b2c3d
   test_framework: tpane (isolated)
-  protocol: TOPA v0.3 | focus: failures | limit: 5000
+  protocol: TOPAZ v0.3 | focus: failures | limit: 5000
   files_under_test: 24
 
 tests/user_validation.py:
@@ -124,7 +124,7 @@ tests/user_validation.py:
     Got: invalid@
 ```
 
-### Legacy Output (TOPA v0.2)
+### Legacy Output (TOPAZ v0.2)
 ```yaml
 summary:
   total_tests: 156
@@ -172,15 +172,15 @@ For deployment and release information, see [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ### GitHub Actions
 ```yaml
-- name: Run tests and generate TOPA output
+- name: Run tests and generate TOPAZ output
   run: |
     pytest --junitxml=results.xml
-    python src/tpane.py --format junit results.xml > topa_output.yaml
+    python src/tpane.py --format junit results.xml > topaz_output.yaml
 
 - name: Analyze failures with AI
   uses: your-ai-analysis-action@v1
   with:
-    test_results: topa_output.yaml
+    test_results: topaz_output.yaml
 ```
 
 ### CI/CD Pipeline
@@ -188,17 +188,17 @@ For deployment and release information, see [DEPLOYMENT.md](DEPLOYMENT.md).
 #!/bin/bash
 # Run tests and process with tpane
 npm test > test_output.txt 2>&1
-python src/tpane.py --format tap test_output.txt > topa_results.yaml
+python src/tpane.py --format tap test_output.txt > topaz_results.yaml
 
 # Send to AI analysis service
 curl -X POST https://your-ai-service/analyze \
   -H "Content-Type: text/yaml" \
-  --data-binary @topa_results.yaml
+  --data-binary @topaz_results.yaml
 ```
 
 ## Technical Implementation
 
-`tpane` implements the TOPA standard through:
+`tpane` implements the TOPAZ standard through:
 
 - **Smart Format Detection**: Automatic identification of input test format
 - **Modular Parsers**: Extensible parser architecture for new test frameworks
@@ -208,9 +208,9 @@ curl -X POST https://your-ai-service/analyze \
 
 ## Contributing
 
-We welcome contributions to both the TOPA standard and the `tpane` reference implementation:
+We welcome contributions to both the TOPAZ standard and the `tpane` reference implementation:
 
-- **Standard Evolution**: Propose enhancements to the TOPA specification
+- **Standard Evolution**: Propose enhancements to the TOPAZ specification
 - **Parser Extensions**: Add support for new test frameworks
 - **Performance Optimization**: Improve token efficiency and processing speed
 - **Integration Examples**: Share real-world usage patterns

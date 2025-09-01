@@ -1,8 +1,8 @@
-# TOPA v0.1 - Test Output Protocol for AI
+# TOPAZ v0.1 - Test Output Protocol for AI
 
 ## Overview
 
-TOPA (Test Output Protocol for AI) is a standardized test output format specifically designed for LLM consumption. It addresses the token efficiency, structured parsing, and cross-tool integration needs of AI-powered development workflows.
+TOPAZ (Test Output Protocol for AI) is a standardized test output format specifically designed for LLM consumption. It addresses the token efficiency, structured parsing, and cross-tool integration needs of AI-powered development workflows.
 
 **Key Benefits:**
 - 60-80% token reduction compared to raw test output
@@ -70,7 +70,7 @@ failures:
 
 ## Focus Modes
 
-TOPA supports different levels of detail based on context needs:
+TOPAZ supports different levels of detail based on context needs:
 
 ### 1. Summary Mode
 Shows only high-level statistics and file-level issue counts.
@@ -215,7 +215,7 @@ Only include diffs when token budget allows:
 
 ## Source Format Support
 
-TOPA parsers should support these common test output formats:
+TOPAZ parsers should support these common test output formats:
 
 ### JUnit XML
 ```xml
@@ -280,7 +280,7 @@ FAILED test_auth.py::test_login - AttributeError: 'NoneType'
 
 ## Validation Requirements
 
-A valid TOPA implementation must:
+A valid TOPAZ implementation must:
 
 1. **Preserve Semantic Completeness**: All failure information from source must be representable
 2. **Achieve Token Efficiency**: 60-80% reduction vs. raw output for typical test suites

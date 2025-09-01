@@ -1,7 +1,7 @@
 """
-TOPA Encoder
+TOPAZ Encoder
 
-Converts parsed test data into standardized TOPA format with token optimization.
+Converts parsed test data into standardized TOPAZ format with token optimization.
 """
 
 from pathlib import Path
@@ -17,7 +17,7 @@ from .schema import (
     TestCounts,
     TestResult,
     TestType,
-    TOPAOutput,
+    TOPAZOutput,
 )
 from .token_budget import TokenBudget
 
@@ -31,8 +31,8 @@ class FocusMode:
     FIRST_FAILURE = "first-failure"
 
 
-class TOPAEncoder:
-    """Encodes parsed test data into TOPA format with token optimization."""
+class TOPAZEncoder:
+    """Encodes parsed test data into TOPAZ format with token optimization."""
 
     VERSION = "0.1"
 
@@ -45,13 +45,13 @@ class TOPAEncoder:
         self.budget = token_budget or TokenBudget(2000)
 
     def encode(self, parsed_data: ParsedTestData) -> dict[str, Any]:
-        """Convert parsed test data to TOPA format."""
+        """Convert parsed test data to TOPAZ format."""
 
         # Build summary
         summary = self._build_summary(parsed_data)
 
-        # Create base TOPA output
-        topa_output = TOPAOutput(version=self.VERSION, summary=summary)
+        # Create base TOPAZ output
+        topa_output = TOPAZOutput(version=self.VERSION, summary=summary)
 
         # Add details based on focus mode
         if self.focus_mode == FocusMode.SUMMARY:

@@ -1,7 +1,7 @@
 """
-TOPA v0.3 Encoder
+TOPAZ v0.3 Encoder
 
-Converts parsed test data into TOPA v0.3 format with execution context and
+Converts parsed test data into TOPAZ v0.3 format with execution context and
 optimized token usage following the v0.3 specification.
 """
 
@@ -18,7 +18,7 @@ from .schema import (
     FocusMode,
     ParsedTestData,
     ProjectType,
-    TOPAV3Output,
+    TOPAZV3Output,
     V3FailureResult,
     normalize_environment_variables,
     normalize_flags,
@@ -26,8 +26,8 @@ from .schema import (
 from .token_budget import TokenBudget
 
 
-class TOPAV3Encoder:
-    """Encodes parsed test data into TOPA v0.3 format with execution context."""
+class TOPAZV3Encoder:
+    """Encodes parsed test data into TOPAZ v0.3 format with execution context."""
 
     VERSION = "0.3"
 
@@ -42,13 +42,13 @@ class TOPAV3Encoder:
         self.command = command or self._detect_command()
 
     def encode(self, parsed_data: ParsedTestData) -> dict[str, Any]:
-        """Convert parsed test data to TOPA v0.3 format."""
+        """Convert parsed test data to TOPAZ v0.3 format."""
 
         # Build execution context
         execution_context = self._build_execution_context(parsed_data)
 
         # Create v0.3 output
-        v3_output = TOPAV3Output(
+        v3_output = TOPAZV3Output(
             execution_context=execution_context, focus_mode=self.focus_mode
         )
 
@@ -63,14 +63,14 @@ class TOPAV3Encoder:
         return v3_output.to_dict()
 
     def _build_execution_context(self, parsed_data: ParsedTestData) -> ExecutionContext:
-        """Build the TOPA v0.3 execution context."""
+        """Build the TOPAZ v0.3 execution context."""
 
         # Required fields
         pid = os.getpid()
         pwd = str(Path.cwd())
         runtime = self._detect_runtime()
         test_framework = self._detect_test_framework()
-        protocol = f"TOPA v{self.VERSION} | focus: {self.focus_mode.value} | limit: {self.budget.limit}"
+        protocol = f"TOPAZ v{self.VERSION} | focus: {self.focus_mode.value} | limit: {self.budget.limit}"
 
         # Optional fields
         package_manager = self._detect_package_manager()

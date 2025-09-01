@@ -3,7 +3,7 @@
 """
 TAP (Test Anything Protocol) Parser
 
-Parses TAP format test output into TOPA format.
+Parses TAP format test output into TOPAZ format.
 """
 
 import re

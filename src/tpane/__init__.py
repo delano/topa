@@ -1,7 +1,7 @@
 # src/tpane/__init__.py
 
 """
-tpane - Reference implementation of TOPA (Test Output Protocol for AI)
+tpane - Reference implementation of TOPAZ (Test Output Protocol for AI)
 
 A standardized test output format designed for LLM consumption.
 """

@@ -3,7 +3,7 @@
 # src/tpane/__main__.py
 
 """
-tpane - Reference implementation of TOPA (Test Output Protocol for AI)
+tpane - Reference implementation of TOPAZ (Test Output Protocol for AI Zealots)
 A standardized test output format designed for LLM consumption.
 
 Usage:
@@ -14,12 +14,12 @@ Options:
   --format FORMAT    Input format: junit, tap, pytest, rspec, auto [default: auto]
   --mode MODE        Focus mode: summary, critical, failures, first-failure, all [default: failures]
   --limit TOKENS     Token budget limit [default: 5000]
-  --topa-version VER TOPA version: v0.2, v0.3 [default: v0.3]
+  --topaz-version VER TOPAZ version: v0.2, v0.3 [default: v0.3]
   --version          Show version information
   --help             Show this help message
 
 Examples:
-  # Convert JUnit XML to TOPA format
+  # Convert JUnit XML to TOPAZ format
   tpane --format junit test-results.xml
 
   # Process pytest output with summary mode
@@ -39,8 +39,8 @@ from typing import Optional, Union
 import yaml
 
 # Import core modules
-from .core.encoder import TOPAEncoder
-from .core.encoder_v3 import TOPAV3Encoder
+from .core.encoder import TOPAZEncoder
+from .core.encoder_v3 import TOPAZV3Encoder
 from .core.token_budget import TokenBudget
 from .parsers.base import BaseParser
 from .parsers.junit import JUnitParser
@@ -174,7 +174,7 @@ def read_input(input_file: Optional[str], max_size_mb: int = 50) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="tpane - Reference implementation of TOPA (Test Output Protocol for AI)",
+        description="tpane - Reference implementation of TOPAZ (Test Output Protocol for AI)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -210,11 +210,11 @@ Examples:
     )
 
     parser.add_argument(
-        "--topa-version",
+        "--topaz-version",
         type=str,
         choices=["v0.2", "v0.3"],
         default="v0.3",
-        help="TOPA version to output (default: v0.3)",
+        help="TOPAZ version to output (default: v0.3)",
     )
 
     parser.add_argument(
@@ -232,7 +232,7 @@ Examples:
     )
 
     parser.add_argument(
-        "--version", action="version", version=f"tpane {VERSION} (TOPA format)"
+        "--version", action="version", version=f"tpane {VERSION} (TOPAZ format)"
     )
 
     args = parser.parse_args()
@@ -268,22 +268,22 @@ Examples:
         token_budget = TokenBudget(args.limit)
 
         # Choose encoder version
-        encoder: Union[TOPAV3Encoder, TOPAEncoder]
-        if args.topa_version == "v0.3":
+        encoder: Union[TOPAZV3Encoder, TOPAZEncoder]
+        if args.topaz_version == "v0.3":
             # Get command from args for v0.3 context
             command = " ".join(sys.argv)
-            encoder = TOPAV3Encoder(focus_mode.value, token_budget, command)
+            encoder = TOPAZV3Encoder(focus_mode.value, token_budget, command)
         else:
             # Legacy v0.2 encoder
-            encoder = TOPAEncoder(focus_mode.value, token_budget)
+            encoder = TOPAZEncoder(focus_mode.value, token_budget)
 
-        # Generate TOPA output
+        # Generate TOPAZ output
         try:
-            topa_output = encoder.encode(parsed_results)
+            topaz_output = encoder.encode(parsed_results)
 
             # Output as YAML (more readable than JSON for this use case)
             yaml_output = yaml.dump(
-                topa_output,
+                topaz_output,
                 default_flow_style=False,
                 sort_keys=False,
                 allow_unicode=True,
@@ -292,7 +292,7 @@ Examples:
             print(yaml_output)
 
         except Exception as e:
-            print(f"Error encoding TOPA output: {e}", file=sys.stderr)
+            print(f"Error encoding TOPAZ output: {e}", file=sys.stderr)
             sys.exit(1)
 
     except KeyboardInterrupt:

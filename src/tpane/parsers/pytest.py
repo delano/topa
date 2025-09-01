@@ -3,7 +3,7 @@
 """
 Pytest Output Parser
 
-Parses pytest console output into TOPA format.
+Parses pytest console output into TOPAZ format.
 """
 
 import re

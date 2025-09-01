@@ -1,19 +1,19 @@
-# TOPA Token Analysis
+# TOPAZ Token Analysis
 
-Analysis of token reduction achieved by TOPA compared to raw test output formats.
+Analysis of token reduction achieved by TOPAZ compared to raw test output formats.
 
 ## Token Reduction Measurements
 
-Based on the Tryouts agent mode implementation (proof of concept), TOPA achieves significant token reductions:
+Based on the Tryouts agent mode implementation (proof of concept), TOPAZ achieves significant token reductions:
 
-### Before TOPA (Raw Test Output)
+### Before TOPAZ (Raw Test Output)
 ```
 FAILED try/formatters/agent_formatter_try.rb:45: Expected "FAIL: 1/3 tests (1 files, 125ms)" but got "FAIL: 1/3 tests (1 files, 125ms)\n\ntry/formatters/agent_formatter_try.rb:\n  L46: expected FAIL: 1/3 tests (1 files, 125ms), got FAIL: 1/3 tests (1 files, 125ms)\n    Test: formats failed test with multiple issues\n\nSummary: 2 passed, 1 failed in 1 files"
 
 Token count: ~180-220 tokens
 ```
 
-### After TOPA (Structured Format)
+### After TOPAZ (Structured Format)
 ```yaml
 version: "0.1"
 summary:
@@ -112,13 +112,13 @@ failures:
 ### Typical CI/CD Pipeline
 - **Test runs per day**: 100
 - **Average raw output**: 2,000 tokens per run
-- **TOPA output**: 800 tokens per run (60% reduction)
+- **TOPAZ output**: 800 tokens per run (60% reduction)
 - **Daily savings**: 120,000 tokens
 - **Monthly savings**: 3.6M tokens
 
 ### Cost Estimates (GPT-4 pricing)
 - **Raw processing cost**: $21.60/month (3.6M x $0.006/1K)
-- **TOPA processing cost**: $8.64/month (1.44M x $0.006/1K)
+- **TOPAZ processing cost**: $8.64/month (1.44M x $0.006/1K)
 - **Monthly savings**: $12.96/month per pipeline
 
 ### Large Organization (100 pipelines)
@@ -129,7 +129,7 @@ failures:
 ## Performance Benchmarks
 
 ### Processing Speed
-| Format | Lines | Raw Parse | TOPA Parse | Total Time |
+| Format | Lines | Raw Parse | TOPAZ Parse | Total Time |
 |--------|-------|-----------|------------|------------|
 | JUnit XML | 1,000 | 50ms | 15ms | 65ms |
 | pytest | 500 | 30ms | 10ms | 40ms |
@@ -138,7 +138,7 @@ failures:
 
 ### Memory Usage
 - **Raw formats**: Variable, text-heavy
-- **TOPA**: Consistent structured data, ~40% smaller
+- **TOPAZ**: Consistent structured data, ~40% smaller
 - **Token budget**: Predictable memory allocation
 
 ## Integration Benefits
@@ -175,7 +175,7 @@ failures:
 
 ## Conclusion
 
-TOPA demonstrates significant value in reducing token consumption while improving semantic clarity for AI-powered development tools. The 60-80% token reduction achieved in the Tryouts proof of concept, combined with better structured data, justifies the standardization effort.
+TOPAZ demonstrates significant value in reducing token consumption while improving semantic clarity for AI-powered development tools. The 60-80% token reduction achieved in the Tryouts proof of concept, combined with better structured data, justifies the standardization effort.
 
 **Key Success Factors**:
 - Evidence-based design (Tryouts validation)

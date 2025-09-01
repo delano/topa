@@ -1,13 +1,13 @@
-# TOPA Integration Guide
+# TOPAZ Integration Guide
 
-This guide shows how to integrate TOPA into various development workflows and tools.
+This guide shows how to integrate TOPAZ into various development workflows and tools.
 
 ## CI/CD Integration
 
 ### GitHub Actions
 
 ```yaml
-name: Test with TOPA Analysis
+name: Test with TOPAZ Analysis
 on: [push, pull_request]
 
 jobs:
@@ -21,11 +21,11 @@ jobs:
           pytest --junit-xml=test-results.xml
         continue-on-error: true
 
-      - name: Convert to TOPA format
+      - name: Convert to TOPAZ format
         run: |
           python topa/src/tpane.py --format junit --mode summary test-results.xml > test-summary.yaml
 
-      - name: Upload TOPA output
+      - name: Upload TOPAZ output
         uses: actions/upload-artifact@v3
         with:
           name: test-analysis
@@ -109,7 +109,7 @@ import openai
 import subprocess
 import yaml
 
-# Run tests and get TOPA output
+# Run tests and get TOPAZ output
 result = subprocess.run([
     'python', 'tpane.py', '--mode', 'failures', 'test-results.xml'
 ], capture_output=True, text=True)
@@ -134,7 +134,7 @@ print(response.choices[0].message.content)
 import anthropic
 import subprocess
 
-# Get TOPA output with appropriate token limit for Claude
+# Get TOPAZ output with appropriate token limit for Claude
 result = subprocess.run([
     'python', 'tpane.py', '--limit', '8000', '--mode', 'first-failure'
 ], capture_output=True, text=True)
@@ -159,13 +159,13 @@ print(response.content[0].text)
 
 ```json
 {
-  "name": "TOPA Test Analysis",
+  "name": "TOPAZ Test Analysis",
   "version": "0.1.0",
   "contributes": {
     "commands": [
       {
         "command": "topa.analyzeTests",
-        "title": "Analyze Test Results with TOPA"
+        "title": "Analyze Test Results with TOPAZ"
       }
     ]
   }
@@ -176,7 +176,7 @@ print(response.content[0].text)
 
 ```vim
 " Add to .vimrc or init.vim
-function! TOPAAnalyze()
+function! TOPAZAnalyze()
     let test_output = system('pytest --tb=short 2>&1')
     let topa_output = system('echo "' . escape(test_output, '"') . '" | python ~/topa/src/tpane.py --mode critical')
 
@@ -186,7 +186,7 @@ function! TOPAAnalyze()
     put =topa_output
 endfunction
 
-command! TOPAAnalyze call TOPAAnalyze()
+command! TOPAZAnalyze call TOPAZAnalyze()
 ```
 
 ## Custom Parser Development
@@ -270,10 +270,10 @@ done > combined-analysis.yaml
 
 ### Common Issues
 
-1. **Malformed Input**: TOPA includes fallback text parsing for most formats
+1. **Malformed Input**: TOPAZ includes fallback text parsing for most formats
 2. **Large Files**: Use `--limit` to cap token usage
 3. **Unsupported Formats**: Contribute a new parser or use generic text parsing
-4. **Encoding Issues**: TOPA handles UTF-8 by default
+4. **Encoding Issues**: TOPAZ handles UTF-8 by default
 
 ### Debugging
 
@@ -306,18 +306,18 @@ ENTRYPOINT ["python", "tpane/tpane.py"]
 ```python
 import json
 import boto3
-from tpane import TOPAEncoder, PytestParser
+from tpane import TOPAZEncoder, PytestParser
 
 def lambda_handler(event, context):
     # Parse test output from event
     test_output = event['test_output']
     format_type = event.get('format', 'pytest')
 
-    # Process with TOPA
+    # Process with TOPAZ
     parser = PytestParser()  # or get_parser(format_type)
     parsed_data = parser.parse(test_output)
 
-    encoder = TOPAEncoder('summary')
+    encoder = TOPAZEncoder('summary')
     topa_output = encoder.encode(parsed_data)
 
     return {
@@ -330,7 +330,7 @@ def lambda_handler(event, context):
 
 ### Submit Parser to Test Frameworks
 
-1. **Create PR** with native TOPA output support
+1. **Create PR** with native TOPAZ output support
 2. **Reference implementation** available in this repo
 3. **Specification** provides clear target format
 4. **Benefits**: Reduced processing overhead, better AI integration
